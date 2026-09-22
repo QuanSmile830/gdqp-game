@@ -1,0 +1,3369 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#070c08">
+<meta name="description" content="MINI GAME GDQP — V19 Logic + V20 Tactical UI">
+<title>MINI GAME GDQP — V19 LOGIC × V20 UI</title>
+
+<style>
+:root{
+  --bg:#050806;
+  --bg2:#0a110b;
+  --panel:#101a12;
+  --panel2:#152218;
+  --panel3:#1d2c1f;
+  --olive:#607b48;
+  --green:#63d17b;
+  --steel:#b8c4bc;
+  --sand:#e0bd67;
+  --red:#e35b55;
+  --blue:#6685ba;
+  --cyan:#63d4c0;
+  --purple:#a58be8;
+  --pink:#e982c3;
+  --white:#f5f8f2;
+  --muted:#8e9e91;
+  --border:rgba(220,240,222,.13);
+  --border2:rgba(220,240,222,.24);
+  --shadow:0 30px 90px rgba(0,0,0,.65);
+}
+
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+
+html,body{
+  width:100%;
+  min-height:100%;
+  margin:0;
+}
+
+body{
+  overflow-x:hidden;
+  background:
+    radial-gradient(circle at 50% 15%,rgba(65,105,62,.16),transparent 34%),
+    radial-gradient(circle at 15% 90%,rgba(39,83,50,.13),transparent 30%),
+    linear-gradient(135deg,#030503,#0a110b 45%,#050806);
+  color:var(--white);
+  font-family:Inter,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+  font-weight:700;
+}
+
+body::before{
+  content:"";
+  position:fixed;
+  inset:0;
+  pointer-events:none;
+  opacity:.1;
+  background-image:
+    linear-gradient(rgba(255,255,255,.04) 1px,transparent 1px),
+    linear-gradient(90deg,rgba(255,255,255,.04) 1px,transparent 1px);
+  background-size:44px 44px;
+  mask-image:linear-gradient(to bottom,black,transparent 95%);
+}
+
+button{font:inherit}
+button:disabled{cursor:not-allowed}
+
+.app{
+  width:100%;
+  min-height:100vh;
+  padding:18px;
+}
+
+.header{
+  width:100%;
+  max-width:2400px;
+  min-height:92px;
+  margin:0 auto 16px;
+  padding:18px 24px;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:20px;
+  border:1px solid var(--border2);
+  border-radius:22px;
+  background:linear-gradient(145deg,rgba(28,43,29,.97),rgba(8,14,9,.98));
+  box-shadow:var(--shadow),inset 0 1px rgba(255,255,255,.07);
+  position:relative;
+  overflow:hidden;
+}
+
+.header::after{
+  content:"";
+  position:absolute;
+  left:0;
+  right:0;
+  bottom:0;
+  height:3px;
+  background:linear-gradient(90deg,transparent,var(--green),var(--sand),var(--green),transparent);
+}
+
+.brand{
+  display:flex;
+  align-items:center;
+  gap:18px;
+  min-width:0;
+}
+
+.brand-emblem{
+  width:66px;
+  height:66px;
+  flex:0 0 auto;
+  display:grid;
+  place-items:center;
+  border-radius:18px;
+  background:linear-gradient(145deg,#31462e,#111b12);
+  border:2px solid rgba(213,184,107,.45);
+  box-shadow:0 10px 30px rgba(0,0,0,.5),inset 0 1px rgba(255,255,255,.12);
+  font-size:36px;
+}
+
+.brand-title h1{
+  margin:0;
+  font-size:clamp(27px,3vw,52px);
+  line-height:1;
+  letter-spacing:.045em;
+  text-shadow:0 4px 18px #000;
+}
+
+.brand-title p{
+  margin:8px 0 0;
+  color:var(--sand);
+  font-size:clamp(9px,1vw,16px);
+  letter-spacing:.14em;
+}
+
+.header-right{
+  display:flex;
+  align-items:center;
+  gap:12px;
+  flex-wrap:wrap;
+  justify-content:flex-end;
+}
+
+.badge{
+  padding:13px 18px;
+  border:1px solid var(--border2);
+  border-radius:999px;
+  background:rgba(4,9,5,.72);
+  color:#dce7dc;
+  font-size:clamp(11px,1vw,18px);
+  letter-spacing:.07em;
+  white-space:nowrap;
+}
+
+.badge.active{
+  color:#071008;
+  background:linear-gradient(135deg,#8de59c,#45b866);
+  border-color:#9ef1aa;
+  box-shadow:0 0 24px rgba(99,209,123,.35);
+}
+
+.layout{
+  width:100%;
+  max-width:2400px;
+  margin:0 auto;
+  display:grid;
+  grid-template-columns:minmax(0,1fr) minmax(330px,440px);
+  gap:16px;
+}
+
+.card{
+  border:1px solid var(--border2);
+  background:linear-gradient(145deg,rgba(22,35,24,.97),rgba(7,12,8,.98));
+  box-shadow:var(--shadow),inset 0 1px rgba(255,255,255,.045);
+  border-radius:24px;
+}
+
+.board-card{
+  min-width:0;
+  min-height:calc(100vh - 126px);
+  padding:14px;
+  display:flex;
+}
+
+.board-shell{
+  width:100%;
+  min-height:calc(100vh - 154px);
+  border-radius:20px;
+  position:relative;
+  overflow:hidden;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  background:
+    radial-gradient(circle at 50% 50%,rgba(95,135,72,.17),transparent 42%),
+    linear-gradient(145deg,#0c150e,#071008);
+  border:1px solid rgba(184,203,185,.12);
+  box-shadow:inset 0 0 100px rgba(0,0,0,.48);
+  perspective:1800px;
+}
+
+.board-shell::before{
+  content:"";
+  position:absolute;
+  width:88%;
+  aspect-ratio:1;
+  border:1px solid rgba(99,209,123,.08);
+  border-radius:50%;
+  box-shadow:0 0 0 70px rgba(99,209,123,.018),0 0 0 140px rgba(99,209,123,.012);
+  pointer-events:none;
+}
+
+.board{
+  width:min(97vh,calc(100% - 20px));
+  aspect-ratio:12 / 8;
+  position:relative;
+  display:grid;
+  grid-template-columns:repeat(12,1fr);
+  grid-template-rows:repeat(8,1fr);
+  gap:clamp(4px,.4vw,8px);
+  padding:clamp(7px,8vw,14px);
+  transform:rotateX(17deg);
+  transform-style:preserve-3d;
+}
+
+.board::before{
+  content:"";
+  position:absolute;
+  inset:4%;
+  border-radius:28px;
+  transform:translateZ(-38px);
+  background:linear-gradient(145deg,#253927,#101b12);
+  border:2px solid rgba(211,231,210,.12);
+  box-shadow:0 45px 65px rgba(0,0,0,.75),0 16px 0 #101810,0 22px 0 #080c08,inset 0 0 40px rgba(0,0,0,.7);
+}
+
+.board::after{
+  content:"";
+  position:absolute;
+  inset:8%;
+  pointer-events:none;
+  border:1px solid rgba(213,184,107,.08);
+  border-radius:20px;
+  transform:translateZ(8px);
+}
+
+.center-dashboard{
+  position:absolute;
+  z-index:200;
+  left:50%;
+  top:50%;
+  width:45%;
+  min-width:310px;
+  transform:translate(-50%,-50%) translateZ(38px);
+  padding:clamp(16px,2vw,34px);
+  text-align:center;
+  border:1px solid rgba(213,230,214,.17);
+  border-radius:24px;
+  background:
+    radial-gradient(circle at 50% 30%,rgba(67,112,66,.25),transparent 50%),
+    linear-gradient(145deg,rgba(17,29,19,.97),rgba(4,9,5,.98));
+  box-shadow:0 25px 60px rgba(0,0,0,.7),inset 0 1px rgba(255,255,255,.08),0 0 45px rgba(99,209,123,.08);
+  backdrop-filter:blur(8px);
+}
+
+.radar{
+  width:clamp(70px,7vw,120px);
+  aspect-ratio:1;
+  margin:0 auto 12px;
+  border-radius:50%;
+  position:relative;
+  overflow:hidden;
+  border:2px solid rgba(99,209,123,.55);
+  background:
+    radial-gradient(circle,transparent 19%,rgba(99,209,123,.05) 20%,transparent 21%),
+    radial-gradient(circle,transparent 43%,rgba(99,209,123,.09) 44%,transparent 45%),
+    radial-gradient(circle,transparent 67%,rgba(99,209,123,.11) 68%,transparent 69%),
+    rgba(15,37,20,.65);
+  box-shadow:0 0 25px rgba(99,209,123,.16);
+}
+
+.radar::before,.radar::after{
+  content:"";
+  position:absolute;
+  inset:0;
+  background:linear-gradient(90deg,transparent 49.5%,rgba(99,209,123,.25) 50%,transparent 50.5%);
+}
+
+.radar::after{transform:rotate(90deg)}
+
+.radar-line{
+  position:absolute;
+  width:50%;
+  height:2px;
+  left:50%;
+  top:50%;
+  transform-origin:left center;
+  background:linear-gradient(90deg,var(--green),transparent);
+  animation:radarSweep 2.4s linear infinite;
+  box-shadow:0 0 12px var(--green);
+}
+
+@keyframes radarSweep{to{transform:rotate(360deg)}}
+
+.command-label{
+  color:var(--sand);
+  font-size:clamp(9px,.8vw,15px);
+  letter-spacing:.16em;
+}
+
+.center-title{
+  margin-top:7px;
+  font-size:clamp(20px,2vw,38px);
+  font-weight:1000;
+  letter-spacing:.04em;
+  text-shadow:0 5px 20px #000;
+}
+
+.center-subtitle{
+  margin:8px auto 16px;
+  max-width:800px;
+  color:#aab7ac;
+  font-size:clamp(10px,.8vw,16px);
+  line-height:1.5;
+}
+
+.current-player{
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:8px;
+  font-size:clamp(12px,1vw,19px);
+}
+
+.current-player strong{color:var(--green)}
+
+.current-dot{
+  width:14px;
+  height:14px;
+  border-radius:50%;
+  background:var(--green);
+  box-shadow:0 0 15px currentColor;
+}
+
+.current-status{
+  margin-top:8px;
+  color:var(--sand);
+  font-size:clamp(11px,.9vw,17px);
+}
+
+.dashboard-score{
+  margin:9px 0 4px;
+  color:#a7f5b2;
+  font-size:clamp(34px,4vw,76px);
+  font-weight:1000;
+  line-height:1;
+  text-shadow:0 0 28px rgba(99,209,123,.28);
+}
+
+.dashboard-status{
+  min-height:28px;
+  color:#c1ccc2;
+  font-size:clamp(11px,.85vw,17px);
+}
+
+.modifier-row{
+  display:flex;
+  justify-content:center;
+  flex-wrap:wrap;
+  gap:7px;
+  margin:12px 0 0;
+}
+
+.modifier{
+  padding:5px 9px;
+  border-radius:999px;
+  font-size:clamp(9px,.7vw,13px);
+  border:1px solid rgba(255,255,255,.13);
+  background:rgba(255,255,255,.05);
+}
+
+.modifier.good{color:#9cf4aa;border-color:rgba(99,209,123,.35)}
+.modifier.bad{color:#ff9e96;border-color:rgba(227,91,85,.35)}
+.modifier.gold{color:#f1d27a;border-color:rgba(224,189,103,.4)}
+.modifier.purple{color:#c8b6ff;border-color:rgba(165,139,232,.4)}
+.modifier.pink{color:#f0a7d7;border-color:rgba(233,130,195,.4)}
+.modifier.orange{color:#ffb681;border-color:rgba(229,154,77,.4)}
+
+.effect-banner{
+  min-height:20px;
+  margin-top:9px;
+  color:var(--sand);
+  font-size:clamp(10px,.8vw,15px);
+}
+
+.roll-button{
+  width:100%;
+  margin-top:15px;
+  padding:clamp(14px,1.2vw,22px);
+  border:2px solid #7adf8a;
+  border-radius:16px;
+  cursor:pointer;
+  color:#061008;
+  background:linear-gradient(135deg,#9aeea7,#46b967);
+  font-size:clamp(15px,1.25vw,25px);
+  font-weight:1000;
+  letter-spacing:.035em;
+  box-shadow:0 10px 25px rgba(0,0,0,.45),0 0 28px rgba(99,209,123,.18),inset 0 2px rgba(255,255,255,.45);
+  transition:.15s ease;
+}
+
+.roll-button:hover:not(:disabled){transform:translateY(-2px);filter:brightness(1.08)}
+.roll-button:active:not(:disabled){transform:translateY(1px) scale(.99)}
+.roll-button:disabled{opacity:.42}
+
+.tile{
+  position:relative;
+  min-width:0;
+  min-height:0;
+  z-index:3;
+  display:flex;
+  flex-direction:column;
+  justify-content:center;
+  align-items:center;
+  padding:clamp(3px,.45vw,8px);
+  border:1px solid rgba(238,248,238,.22);
+  border-radius:clamp(7px,.7vw,14px);
+  transform:translateZ(22px);
+  transform-style:preserve-3d;
+  background:linear-gradient(145deg,rgba(48,67,49,.98),rgba(17,26,18,.98));
+  box-shadow:0 9px 0 rgba(4,8,4,.85),0 13px 15px rgba(0,0,0,.55),inset 0 1px rgba(255,255,255,.08);
+  overflow:visible;
+  transition:transform .25s ease,filter .25s ease,box-shadow .25s ease;
+}
+
+.tile:hover{filter:brightness(1.13)}
+
+.tile-number{
+  position:absolute;
+  top:5px;
+  left:7px;
+  color:rgba(242,248,241,.75);
+  font-size:clamp(8px,.65vw,14px);
+  font-weight:1000;
+}
+
+.tile-icon{
+  font-size:clamp(18px,1.55vw,34px);
+  line-height:1;
+  filter:drop-shadow(0 3px 4px rgba(0,0,0,.55));
+}
+
+.tile-label{
+  margin-top:3px;
+  text-align:center;
+  color:#edf4ed;
+  font-size:clamp(8px,.58vw,13px);
+  font-weight:1000;
+  line-height:1.05;
+  text-shadow:0 2px 5px #000;
+}
+
+.tile-mini{
+  margin-top:3px;
+  text-align:center;
+  color:#9cac9d;
+  font-size:clamp(7px,.48vw,11px);
+  line-height:1.05;
+}
+
+.tile-type-start{background:linear-gradient(145deg,#435f3c,#172619);border-color:rgba(99,209,123,.55)}
+.tile-type-question{background:linear-gradient(145deg,#344c3b,#17251b);border-color:rgba(99,212,192,.32)}
+.tile-type-reward{background:linear-gradient(145deg,#69572c,#292315);border-color:rgba(224,189,103,.4)}
+.tile-type-event{background:linear-gradient(145deg,#2e5060,#172932);border-color:rgba(99,212,192,.32)}
+.tile-type-penalty{background:linear-gradient(145deg,#592e2d,#241717);border-color:rgba(227,91,85,.36)}
+.tile-type-jail{background:linear-gradient(145deg,#443447,#211923);border-color:rgba(165,139,232,.35)}
+.tile-type-jackpot{background:linear-gradient(145deg,#6a4c22,#29200e);border-color:rgba(255,213,96,.55);animation:jackpotPulse 2s ease-in-out infinite}
+.tile-type-collapse{background:linear-gradient(145deg,#50324b,#241724);border-color:rgba(233,130,195,.4);animation:collapsePulse 2.2s ease-in-out infinite}
+
+@keyframes jackpotPulse{
+  50%{box-shadow:0 9px 0 rgba(4,8,4,.85),0 13px 20px rgba(0,0,0,.55),0 0 22px rgba(255,206,75,.16),inset 0 1px rgba(255,255,255,.1)}
+}
+@keyframes collapsePulse{
+  50%{box-shadow:0 9px 0 rgba(4,8,4,.85),0 13px 20px rgba(0,0,0,.55),0 0 22px rgba(165,139,232,.18),inset 0 1px rgba(255,255,255,.1)}
+}
+
+.tile.step-active{
+  transform:translateZ(30px) translateY(-5px) scale(1.04);
+  border-color:rgba(224,189,103,.7);
+  box-shadow:0 0 0 2px rgba(224,189,103,.1),0 0 30px rgba(99,209,123,.3);
+  z-index:60;
+}
+
+.tile.destination{
+  transform:translateZ(36px) translateY(-7px) scale(1.08);
+  border-color:#f5f6ef;
+  box-shadow:0 0 0 3px rgba(255,255,255,.1),0 0 35px rgba(99,209,123,.45),0 0 60px rgba(213,184,107,.18);
+  z-index:80;
+  animation:destinationPulse 1s ease;
+}
+
+@keyframes destinationPulse{
+  0%{transform:translateZ(5px) scale(1)}
+  38%{transform:translateZ(35px) translateY(-9px) scale(1.11)}
+  70%{transform:translateZ(25px) translateY(-3px) scale(1.05)}
+  100%{transform:translateZ(36px) translateY(-7px) scale(1.08)}
+}
+
+.destination-label{
+  position:absolute;
+  left:50%;
+  top:-20px;
+  transform:translateX(-50%);
+  padding:3px 8px;
+  white-space:nowrap;
+  border-radius:999px;
+  color:#0d140e;
+  background:linear-gradient(135deg,#e2c777,#a88a44);
+  box-shadow:0 7px 20px rgba(0,0,0,.4);
+  font-size:8px;
+  font-weight:1000;
+  z-index:100;
+}
+
+.pieces{
+  position:absolute;
+  left:2px;
+  right:2px;
+  bottom:2px;
+  display:flex;
+  flex-wrap:wrap;
+  justify-content:center;
+  gap:2px;
+  z-index:70;
+  pointer-events:none;
+}
+
+.piece{
+  width:clamp(24px,2.8vw,42px);
+  height:clamp(24px,2.8vw,42px);
+  display:grid;
+  place-items:center;
+  border:2px solid #eef3ed;
+  border-radius:50%;
+  color:#fff;
+  font-size:clamp(10px,1.2vw,17px);
+  font-weight:1000;
+  box-shadow:0 7px 16px rgba(0,0,0,.58),inset 0 2px 3px rgba(255,255,255,.25);
+  animation:pieceAppear .3s ease;
+}
+
+.piece.p1{background:linear-gradient(145deg,#d9655e,#8e332f)}
+.piece.p2{background:linear-gradient(145deg,#7191c9,#3f5f99)}
+.piece.p3{background:linear-gradient(145deg,#65c984,#327b4c)}
+.piece.active-piece{transform:scale(1.16);box-shadow:0 7px 16px rgba(0,0,0,.58),0 0 22px currentColor,inset 0 2px 3px rgba(255,255,255,.25)}
+
+@keyframes pieceAppear{
+  from{opacity:0;transform:scale(.35) translateY(16px)}
+  to{opacity:1;transform:scale(1) translateY(0)}
+}
+
+.side{
+  display:flex;
+  flex-direction:column;
+  gap: 16px;
+  min-width:0;
+}
+
+.side-card{padding:18px}
+
+.section-title{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:10px;
+  color:#dce8dd;
+  font-size:clamp(15px,1.15vw,22px);
+  letter-spacing:.04em;
+  margin-bottom:15px;
+}
+
+.section-title span:last-child{color:var(--sand);font-size:.72em}
+
+.dice-area{
+  display:grid;
+  grid-template-columns:150px 1fr;
+  gap: 10px;
+  align-items:center;
+}
+
+.dice-stage{
+  height:150px;
+  display:grid;
+  place-items:center;
+  perspective:800px;
+}
+
+.dice-cube{
+  width:94px;
+  height:94px;
+  position:relative;
+  transform-style:preserve-3d;
+  transform:rotateX(-22deg) rotateY(30deg);
+  transition:transform .7s cubic-bezier(.2,.8,.2,1);
+}
+
+.dice-cube.rolling{animation:cubeRoll .42s linear infinite}
+
+@keyframes cubeRoll{
+  0%{transform:rotateX(0) rotateY(0) rotateZ(0)}
+  25%{transform:rotateX(90deg) rotateY(110deg) rotateZ(20deg)}
+  50%{transform:rotateX(185deg) rotateY(205deg) rotateZ(-14deg)}
+  75%{transform:rotateX(280deg) rotateY(315deg) rotateZ(18deg)}
+  100%{transform:rotateX(360deg) rotateY(450deg) rotateZ(0)}
+}
+
+.dice-face,.big-dice-face{
+  position:absolute;
+  inset:0;
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  grid-template-rows:repeat(3,1fr);
+  gap:6px;
+  padding:13px;
+  border:2px solid #e6eadf;
+  border-radius:16px;
+  background:linear-gradient(145deg,#f7f7ee,#cfd6c9);
+  box-shadow:inset 0 0 18px rgba(0,0,0,.16),0 8px 22px rgba(0,0,0,.4);
+  backface-visibility:hidden;
+}
+
+.dice-face.front{transform:translateZ(47px)}
+.dice-face.back{transform:rotateY(180deg) translateZ(47px)}
+.dice-face.right{transform:rotateY(90deg) translateZ(47px)}
+.dice-face.left{transform:rotateY(-90deg) translateZ(47px)}
+.dice-face.top{transform:rotateX(90deg) translateZ(47px)}
+.dice-face.bottom{transform:rotateX(-90deg) translateZ(47px)}
+
+.dice-pip,.big-pip,.mobile-pip{
+  width:100%;
+  height:100%;
+  border-radius:50%;
+  background:#28332b;
+  opacity:0;
+  transform:scale(.45);
+  transition:.12s;
+}
+
+.dice-pip.active,.big-pip.active,.mobile-pip.active{
+  opacity:1;
+  transform:scale(1);
+  box-shadow:0 0 7px rgba(0,0,0,.28);
+}
+
+.mobile-dice{display:none}
+
+.dice-info strong{
+  display:block;
+  color:var(--sand);
+  font-size:clamp(24px,2vw,38px);
+}
+
+.dice-info p{
+  margin:6px 0 0;
+  color:#a6b1a7;
+  font-size:clamp(12px,1vw,17px);
+  line-height:1.45;
+}
+
+.player-list{display:flex;flex-direction:column;gap:10px}
+
+.player-row{
+  position:relative;
+  display:grid;
+  grid-template-columns:50px minmax(0,1fr) auto;
+  align-items:center;
+  gap:11px;
+  padding:12px;
+  border-radius:15px;
+  border:1px solid var(--border);
+  background:rgba(255,255,255,.025);
+  transition:.2s;
+}
+
+.player-row.active{
+  border-color:rgba(99,209,123,.6);
+  background:rgba(99,209,123,.08);
+  box-shadow:0 0 22px rgba(99,209,123,.09);
+}
+
+.player-avatar{
+  width:50px;
+  height:50px;
+  border-radius:13px;
+  display:grid;
+  place-items:center;
+  font-size:28px;
+  background:linear-gradient(145deg,#273729,#101710);
+  border:2px solid currentColor;
+}
+
+.player-name{
+  font-size:clamp(14px,1vw,19px);
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
+}
+
+.player-meta{
+  margin-top:4px;
+  color:#92a094;
+  font-size:clamp(10px,.75vw,14px);
+}
+
+.player-money{
+  color:#9cf4aa;
+  font-size:clamp(20px,1.6vw,30px);
+  font-weight:1000;
+}
+
+.player-effects{
+  grid-column:2/-1;
+  display:flex;
+  flex-wrap:wrap;
+  gap:5px;
+}
+
+.effect-chip{
+  padding:3px 7px;
+  border-radius:999px;
+  background:rgba(255,255,255,.055);
+  color:#cbd5cc;
+  font-size:10px;
+  border:1px solid rgba(255,255,255,.08);
+}
+
+.log{
+  max-height:275px;
+  overflow:auto;
+  display:grid;
+  gap:6px;
+  scrollbar-width:thin;
+}
+
+.log-item{
+  padding:8px 9px;
+  border-left:2px solid rgba(99,209,123,.4);
+  border-radius:8px;
+  background:rgba(255,255,255,.022);
+  color:#aab7aa;
+  font-size:11px;
+  line-height:1.45;
+}
+
+.action-panel{display:grid;gap:10px;margin-top:auto}
+
+.rules-button,.reset-button{
+  width:100%;
+  padding:15px;
+  border-radius:14px;
+  cursor:pointer;
+  font-size:clamp(14px,1vw,19px);
+  font-weight:1000;
+  transition:.15s;
+}
+
+.rules-button{
+  color:#eaf1ea;
+  border:1px solid rgba(213,230,214,.2);
+  background:linear-gradient(145deg,#263728,#121c14);
+}
+
+.reset-button{
+  color:#fff1ef;
+  border:1px solid rgba(227,91,85,.32);
+  background:linear-gradient(145deg,#45201f,#21100f);
+}
+
+.rules-button:hover,.reset-button:hover{transform:translateY(-2px);filter:brightness(1.1)}
+
+.modal-backdrop{
+  position:fixed;
+  z-index:3000;
+  inset:0;
+  display:grid;
+  place-items:center;
+  padding:20px;
+  background:rgba(1,4,2,.82);
+  backdrop-filter:blur(10px);
+  opacity:0;
+  visibility:hidden;
+  transition:.2s;
+}
+
+.modal-backdrop.show{opacity:1;visibility:visible}
+
+.modal{
+  width:min(900px,96vw);
+  max-height:90vh;
+  overflow:auto;
+  padding:clamp(24px,3vw,48px);
+  border-radius:28px;
+  border:1px solid rgba(218,238,219,.2);
+  background:
+    radial-gradient(circle at 50% 0,rgba(76,122,72,.2),transparent 45%),
+    linear-gradient(145deg,#172419,#080d09);
+  box-shadow:0 40px 100px rgba(0,0,0,.75),inset 0 1px rgba(255,255,255,.08);
+  text-align:center;
+  transform:translateY(15px) scale(.97);
+  transition:.25s ease;
+}
+
+.modal-backdrop.show .modal{transform:none}
+
+.modal-icon{
+  font-size:clamp(48px,6vw,90px);
+  line-height:1;
+  margin-bottom:15px;
+}
+
+.modal-title{
+  color:var(--sand);
+  font-size:clamp(25px,3vw,48px);
+  font-weight:1000;
+}
+
+.modal-description{
+  margin:16px auto 0;
+  color:#c2cdc3;
+  font-size:clamp(15px,1.2vw,22px);
+  line-height:1.55;
+}
+
+.question-box{
+  margin-top:22px;
+  padding:22px;
+  border:1px solid rgba(255,255,255,.12);
+  border-radius:18px;
+  background:rgba(0,0,0,.18);
+}
+
+.question-text{
+  font-size:clamp(19px,1.8vw,31px);
+  line-height:1.35;
+  color:#f3f6f1;
+}
+
+.answer-grid{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:12px;
+  margin-top:20px;
+}
+
+.answer-button{
+  min-height:78px;
+  padding:14px;
+  border-radius:15px;
+  border:1px solid rgba(213,230,214,.17);
+  color:#edf3ed;
+  background:linear-gradient(145deg,#243427,#101710);
+  cursor:pointer;
+  font-size:clamp(14px,1.1vw,20px);
+  line-height:1.3;
+  text-align:left;
+  transition:.15s;
+}
+
+.answer-button:hover:not(:disabled){
+  border-color:var(--green);
+  transform:translateY(-2px);
+  background:linear-gradient(145deg,#2d4431,#152018);
+}
+
+.answer-button.correct{border-color:#8cf49a;background:linear-gradient(145deg,#285b35,#16321d)}
+.answer-button.wrong{border-color:#ff8078;background:linear-gradient(145deg,#63302c,#301716)}
+
+.modal-actions{
+  display:flex;
+  justify-content:center;
+  gap:10px;
+  flex-wrap:wrap;
+  margin-top:24px;
+}
+
+.modal-button{
+  min-width:200px;
+  padding:15px 22px;
+  border-radius:14px;
+  cursor:pointer;
+  color:#071008;
+  background:linear-gradient(135deg,#98eda5,#48ba69);
+  border:1px solid #a8f6b2;
+  font-size:clamp(14px,1.05vw,19px);
+  font-weight:1000;
+}
+
+.modal-button.secondary{color:#f1f5f0;background:linear-gradient(145deg,#2d3c2e,#141d15);border-color:rgba(255,255,255,.18)}
+.modal-button.danger{color:#fff;background:linear-gradient(145deg,#913d38,#4a1e1c);border-color:#d85b54}
+.modal-button.gold{color:#171205;background:linear-gradient(135deg,#f2d17a,#ad8234);border-color:#ffe39b}
+
+.special-card{
+  padding:16px;
+  margin:16px 0;
+  border-radius:14px;
+  border:1px solid rgba(255,255,255,.1);
+  background:rgba(255,255,255,.035);
+  text-align:left;
+}
+
+.special-title{color:var(--sand);font-size:clamp(15px,1.1vw,21px);font-weight:1000}
+.special-text{margin-top:6px;color:#bac6bc;font-size:clamp(12px,.95vw,17px);line-height:1.5}
+
+.money{color:#9cf4aa;font-weight:1000}
+.money-negative{color:#ff8982;font-weight:1000}
+
+.winner-banner{
+  padding:20px;
+  border-radius:18px;
+  margin-top:18px;
+  background:radial-gradient(circle at center,rgba(99,209,123,.2),transparent 65%),rgba(99,209,123,.06);
+  border:1px solid rgba(99,209,123,.4);
+  color:#a7f5b2;
+  font-size:clamp(20px,2vw,34px);
+  font-weight:1000;
+}
+
+.random-arena{
+  position:relative;
+  width:210px;
+  height:210px;
+  margin:20px auto;
+  display:grid;
+  place-items:center;
+}
+
+.random-ring,.random-ring2,.random-ring3{
+  position:absolute;
+  inset:0;
+  border-radius:50%;
+  border:1px solid rgba(99,209,123,.2);
+}
+
+.random-ring{animation:ringSpin 2.2s linear infinite}
+.random-ring2{inset:20px;border-color:rgba(224,189,103,.25);animation:ringSpin 1.7s linear infinite reverse}
+.random-ring3{inset:40px;border-color:rgba(99,212,192,.22);animation:ringSpin 1.2s linear infinite}
+
+@keyframes ringSpin{to{transform:rotate(360deg)}}
+
+.random-player{
+  width:82px;
+  height:82px;
+  display:grid;
+  place-items:center;
+  border-radius:50%;
+  background:linear-gradient(145deg,#28382b,#0c130d);
+  border:3px solid var(--green);
+  box-shadow:0 0 35px rgba(99,209,123,.35);
+  font-size:40px;
+  z-index:2;
+}
+
+.random-player.spinning{animation:randomSpin .28s linear infinite}
+
+@keyframes randomSpin{50%{transform:scale(1.08) rotate(8deg)}}
+
+.random-name{font-size:clamp(22px,2.5vw,38px);color:var(--green);font-weight:1000}
+.random-sub{margin-top:8px;color:#a5b1a6}
+
+.dice-overlay{
+  position:fixed;
+  z-index:2500;
+  inset:0;
+  display:grid;
+  place-items:center;
+  align-content:center;
+  gap:20px;
+  background:rgba(1,4,2,.92);
+  backdrop-filter:blur(9px);
+  opacity:0;
+  visibility:hidden;
+  transition:.25s;
+}
+
+.dice-overlay.show{opacity:1;visibility:visible}
+
+.dice-overlay-caption{
+  color:var(--sand);
+  font-size:clamp(18px,2vw,34px);
+  letter-spacing:.08em;
+  text-align:center;
+}
+
+.big-dice-wrap{
+  width:260px;
+  height:260px;
+  display:grid;
+  place-items:center;
+  perspective:1200px;
+  position:relative;
+}
+
+.big-dice-shadow{
+  position:absolute;
+  width:190px;
+  height:45px;
+  bottom:12px;
+  border-radius:50%;
+  background:rgba(0,0,0,.65);
+  filter:blur(16px);
+}
+
+.big-dice{
+  width:170px;
+  height:170px;
+  position:relative;
+  transform-style:preserve-3d;
+}
+
+.big-dice-face{padding:22px;gap:10px;border-width:4px;border-radius:27px}
+.big-dice-face.front{transform:translateZ(85px)}
+.big-dice-face.back{transform:rotateY(180deg) translateZ(85px)}
+.big-dice-face.right{transform:rotateY(90deg) translateZ(85px)}
+.big-dice-face.left{transform:rotateY(-90deg) translateZ(85px)}
+.big-dice-face.top{transform:rotateX(90deg) translateZ(85px)}
+.big-dice-face.bottom{transform:rotateX(-90deg) translateZ(85px)}
+.big-dice.rolling{animation:diceRoll 1s cubic-bezier(.18,.76,.24,1) infinite}
+
+@keyframes diceRoll{to{transform:rotateX(720deg) rotateY(1080deg) rotateZ(540deg)}}
+
+.big-dice-number{
+  min-width:100px;
+  text-align:center;
+  color:#a9f4b3;
+  font-size:clamp(54px,6vw,100px);
+  line-height:1;
+  font-weight:1000;
+  text-shadow:0 0 35px rgba(99,209,123,.35);
+}
+
+.big-dice-subtitle{color:#c3cec5;font-size:clamp(14px,1.3vw,24px)}
+
+.roll-preview{
+  position:fixed;
+  z-index:2400;
+  left:50%;
+  bottom:25px;
+  transform:translate(-50%,20px);
+  padding:13px 22px;
+  border-radius:999px;
+  color:#071008;
+  background:linear-gradient(135deg,#b4f4bd,#62cf79);
+  border:2px solid #d5ffda;
+  box-shadow:0 12px 35px rgba(0,0,0,.5),0 0 28px rgba(99,209,123,.25);
+  font-size:clamp(14px,1.1vw,21px);
+  opacity:0;
+  pointer-events:none;
+  transition:.25s ease;
+}
+
+.roll-preview.show{opacity:1;transform:translate(-50%,0)}
+
+.toast-container{
+  position:fixed;
+  left:50%;
+  bottom:22px;
+  z-index:5000;
+  width:min(520px,calc(100% - 30px));
+  transform:translateX(-50%);
+  display:grid;
+  gap:8px;
+  pointer-events:none;
+}
+
+.toast{
+  padding:13px 17px;
+  border-radius:14px;
+  border:1px solid rgba(99,209,123,.32);
+  background:rgba(14,25,16,.97);
+  box-shadow:0 12px 30px rgba(0,0,0,.5);
+  color:#fff;
+  text-align:center;
+  font-size:clamp(13px,1vw,18px);
+  animation:toastIn .25s ease forwards;
+}
+
+@keyframes toastIn{
+  from{opacity:0;transform:translateY(15px) scale(.96)}
+  to{opacity:1;transform:none}
+}
+
+.confetti-container{
+  position:fixed;
+  inset:0;
+  z-index:4500;
+  pointer-events:none;
+  overflow:hidden;
+}
+
+.confetti{
+  position:absolute;
+  width:9px;
+  height:15px;
+  top:-30px;
+  animation:confettiFall linear forwards;
+}
+
+@keyframes confettiFall{
+  to{
+    transform:translate3d(var(--x),110vh,0) rotate(var(--r));
+    opacity:0;
+  }
+}
+
+@media(max-width:1200px){
+  .layout{grid-template-columns:1fr}
+  .board-card{min-height:auto}
+  .board-shell{min-height:auto;padding:20px 0}
+  .board{width:min(94vw,1000px)}
+  .side{display:grid;grid-template-columns:1fr 1fr}
+  .action-panel{grid-column:1/-1}
+}
+
+@media(max-width:700px){
+  .app{padding:8px}
+  .header{padding:12px;border-radius:15px;flex-direction:column;align-items:stretch}
+  .brand{gap:10px}
+  .brand-emblem{width:50px;height:50px;font-size:28px}
+  .header-right{justify-content:stretch}
+  .badge{flex:1;text-align:center;padding:9px}
+  .board-card{padding:6px;border-radius:15px}
+  .board-shell{overflow:auto;justify-content:flex-start;padding:20px 8px 34px}
+  .board{flex:none;width:760px;transform:none}
+  .center-dashboard{min-width:280px}
+  .side{display:flex}
+  .dice-area{grid-template-columns:120px 1fr}
+  .answer-grid{grid-template-columns:1fr}
+  .modal{padding:20px 15px;max-height:94vh}
+  .roll-preview{bottom:12px}
+}
+
+@media(prefers-reduced-motion:reduce){
+  *,*::before,*::after{
+    animation-duration:.001ms!important;
+    animation-iteration-count:1!important;
+    transition-duration:.001ms!important;
+  }
+}
+</style>
+</head>
+
+<body>
+<div class="app">
+
+<header class="header">
+  <div class="brand">
+    <div class="brand-emblem">🎖️</div>
+    <div class="brand-title">
+      <h1>MINI GAME GDQP Tổ 4</h1>
+      <p>Cre: HOÀNG QUÂN STT:34 và Tổ 4</p>
+    </div>
+  </div>
+  <div class="header-right">
+    <div class="badge" id="turnBadge">CHỜ XÁC ĐỊNH LƯỢT</div>
+    <div class="badge">VÒNG <span id="roundNumber">1</span></div>
+  </div>
+</header>
+
+<main class="layout">
+
+<section class="card board-card">
+  <div class="board-shell">
+    <div id="board" class="board">
+      <div class="center-dashboard">
+        <div class="radar"><div class="radar-line"></div></div>
+        <div class="command-label">COMMAND CENTER • GDQP • TỔ 4</div>
+        <div class="center-title">CHIẾN DỊCH HUẤN LUYỆN</div>
+        <div class="center-subtitle">
+          HÀNH QUÂN QUA 30 CHỐT • TÍCH LŨY QUÂN TRANG • ĐẠT MỐC $100
+        </div>
+
+        <div class="current-player">
+          <span id="currentPlayerDot" class="current-dot"></span>
+          LƯỢT ĐƠN VỊ:
+          <strong id="currentPlayerName">Đang xác định...</strong>
+        </div>
+
+        <div id="currentPlayerStatus" class="current-status">
+          🎯 CHỜ XÁC ĐỊNH ĐƠN VỊ ĐI ĐẦU
+        </div>
+
+        <div id="currentPlayerScore" class="dashboard-score">$0</div>
+        <div id="dashboardStatus" class="dashboard-status">
+          Hệ thống đang chuẩn bị chiến dịch.
+        </div>
+        <div id="modifierRow" class="modifier-row"></div>
+        <div id="effectBanner" class="effect-banner"></div>
+
+        <button id="rollButton" class="roll-button" type="button" disabled>
+          🎲 TUNG XÚC XẮC — HÀNH QUÂN
+        </button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<aside class="side">
+
+<section class="card side-card">
+  <div class="section-title">
+    <span>🎲 XÚC XẮC CHIẾN THUẬT</span>
+    <span>1–6</span>
+  </div>
+  <div class="dice-area">
+    <div class="dice-stage">
+      <div id="diceCube" class="dice-cube">
+        <div class="dice-face front"></div>
+        <div class="dice-face back"></div>
+        <div class="dice-face right"></div>
+        <div class="dice-face left"></div>
+        <div class="dice-face top"></div>
+        <div class="dice-face bottom"></div>
+      </div>
+    </div>
+    <div id="mobileDice" class="mobile-dice"></div>
+    <div class="dice-info">
+      <strong id="diceValueText">Sẵn sàng</strong>
+      <p id="diceHelpText">Chờ lệnh hành quân.</p>
+    </div>
+  </div>
+</section>
+
+<section class="card side-card">
+  <div class="section-title">
+    <span>🪖 DANH SÁCH ĐƠN VỊ</span>
+    <span>3 TỔNG TÀI</span>
+  </div>
+  <div id="playerList" class="player-list"></div>
+</section>
+
+<section class="card side-card">
+  <div class="section-title">
+    <span>📡 NHẬT KÝ CHIẾN DỊCH</span>
+    <span>LIVE</span>
+  </div>
+  <div id="eventLog" class="log"></div>
+</section>
+
+<section class="card side-card action-panel">
+  <button id="rulesButton" class="rules-button" type="button">📖 QUY TẮC CHIẾN DỊCH</button>
+  <button id="resetButton" class="reset-button" type="button">↻ KHỞI ĐỘNG CHIẾN DỊCH MỚI</button>
+</section>
+
+</aside>
+</main>
+</div>
+
+<div id="modalBackdrop" class="modal-backdrop" role="dialog" aria-modal="true" aria-hidden="true">
+  <div id="modal" class="modal"></div>
+</div>
+
+<div id="diceOverlay" class="dice-overlay" aria-hidden="true">
+  <div id="diceOverlayCaption" class="dice-overlay-caption">🎲 ĐANG TUNG XÚC XẮC CHIẾN THUẬT</div>
+  <div class="big-dice-wrap">
+    <div class="big-dice-shadow"></div>
+    <div id="bigDice" class="big-dice">
+      <div class="big-dice-face front"></div>
+      <div class="big-dice-face back"></div>
+      <div class="big-dice-face right"></div>
+      <div class="big-dice-face left"></div>
+      <div class="big-dice-face top"></div>
+      <div class="big-dice-face bottom"></div>
+    </div>
+  </div>
+  <div id="bigDiceNumber" class="big-dice-number">?</div>
+  <div id="bigDiceSubtitle" class="big-dice-subtitle">Chờ kết quả...</div>
+</div>
+
+<div id="rollPreview" class="roll-preview">
+  🎯 Đơn vị sẽ hành quân tới <strong id="rollPreviewText">ô ?</strong>
+</div>
+
+<div id="toastContainer" class="toast-container" aria-live="polite"></div>
+<div id="confettiContainer" class="confetti-container"></div>
+
+<script>
+"use strict";
+
+const CONTENT={
+  GAME_NAME:"MINI GAME GDQP",
+  TEAM_NAME:"Mini Game QDQP của Tổ 4",
+
+  PLAYERS:[
+    {name:"Tổng Tài 1",short:"TT1",color:"#d85b54",face:"🪖"},
+    {name:"Tổng Tài 2",short:"TT2",color:"#6685ba",face:"🎖️"},
+    {name:"Tổng Tài 3",short:"TT3",color:"#54ad70",face:"🐺"}
+  ],
+
+  QUESTIONS:[
+    {
+      question:"Có bao nhiêu phương thức tuyển sinh của các trường công an nhân dân Việt Nam?",
+      answers:["2","3","4","5"],correct:1
+    },
+    {
+      question:"Tính đến năm dự tuyển, Học sinh Trường Văn hóa và công dân thường trú tại địa phương nơi đăng ký sơ tuyển không quá bao nhiêu tuổi? (không tính trường hợp là người dân tộc thiểu số)",
+      answers:["22","25","30","18"],correct:0
+    },
+    {
+      question:"Đâu là nguồn thông tin chính thống, đáng tin cậy nhất để học sinh lớp 12 tra cứu thông tin tuyển sinh vào các trường Quân đội, Công an?",
+      answers:[
+        "Bài đăng trên các hội nhóm, diễn đàn không rõ danh tính trên mạng xã hội.",
+        "Cổng thông tin điện tử của Bộ Quốc phòng, Bộ Công an và các trường, cơ quan tuyển sinh địa phương.",
+        "Lời giới thiệu từ các dịch vụ môi giới \"chạy trường\", \"bao đậu\" bên ngoài.",
+        "Các trang tin tức giải trí trực tuyến."
+      ],correct:1
+    },
+    {
+      question:"Đối tượng tuyển sinh trình độ đại học hệ chính quy bao gồm những ai?",
+      answers:[
+        "Công dân thường trú tại địa phương nơi đăng ký sơ tuyển",
+        "Học sinh Trường Văn hóa (T11) và một số đối tượng khác",
+        "Mọi người",
+        "Cả công dân và học sinh"
+      ],correct:3
+    },
+    {
+      question:"Khi thực hiện định hướng nghề nghiệp quân sự, công an cho con em, gia đình cần dựa trên nguyên tắc chủ yếu nào?",
+      answers:[
+        "Ép buộc con em phải theo học bằng mọi giá kể cả khi không đủ tiêu chuẩn.",
+        "Giáo dục truyền thống gia đình, động viên và định hướng dựa trên năng lực, sự tự nguyện của học sinh.",
+        "Chỉ quan tâm đến chế độ đãi ngộ kinh tế mà không cần xem xét lý lịch chính trị.",
+        "Cho con em tự do đăng ký xét tuyển mà không cần qua các bước sơ tuyển."
+      ],correct:1
+    },
+    {
+      question:"Đối tượng nào sau đây không thuộc diện tuyển sinh đào tạo đại học chính quy tuyển mới vào các trường Công an nhân dân?",
+      answers:[
+        "Chiến sĩ nghĩa vụ Công an nhân dân tại ngũ",
+        "Công dân hoàn thành nghĩa vụ tham gia CAND hoặc nghĩa vụ quân sự.",
+        "Học sinh tốt nghiệp trung học phổ thông hoặc tương đương.",
+        "Công dân đã quá 30 tuổi và không công tác trong lực lượng vũ trang."
+      ],correct:3
+    },
+    {
+      question:"Chỉ số BMI mà thí sinh cần đạt là bao nhiêu?",
+      answers:["Từ 20 đến 30","Từ 18,5 đến 30","Từ 18,5 đến dưới 30","Từ 20 đến 35"],correct:2
+    },
+    {
+      question:"Học viện nào sau đây không thuộc hệ thống các học viện, trường đại học của Công an nhân dân Việt Nam?",
+      answers:[
+        "Học viện An ninh nhân dân",
+        "Học viện Cảnh sát nhân dân",
+        "Học viện Chính trị Công an nhân dân.",
+        "Học viện Kỹ thuật Quân sự"
+      ],correct:3
+    },
+    {
+      question:"Trường đại học nào sau đây của lực lượng Công an nhân dân có trụ sở chính đóng tại khu vực phía Nam?",
+      answers:[
+        "Trường Đại học An ninh nhân dân.",
+        "Trường Đại học Phòng cháy chữa cháy.",
+        "Trường Đại học Kĩ thuật - Hậu cần Công an nhân dân.",
+        "Học viện Chính trị Công an nhân dân."
+      ],correct:0
+    },
+    {
+      question:"Cơ quan nào chịu trách nhiệm tổ chức đăng ký, sơ tuyển, hướng dẫn thủ tục và cung cấp thông tin tuyển sinh quân sự, công an công khai tại địa phương cho học sinh?",
+      answers:[
+        "Ban Chỉ huy quân sự và Công an cấp huyện (hoặc tương đương).",
+        "Sở Giáo dục và Đào tạo tỉnh.",
+        "Ủy ban nhân dân cấp xã.",
+        "Trung tâm Giáo dục nghề nghiệp - Giáo dục thường xuyên."
+      ],correct:0
+    },
+    {
+      question:"Trường hợp nào thí sinh có thể được xem xét tuyển chọn thực hiện nghĩa vụ Công An Nhân Dân?",
+      answers:[
+        "Hình xăm không quá 2 cm², không quá 1 hình và không phản cảm, hoặc đã tẩy xóa",
+        "Có vết trổ, hình xăm hoặc phun xăm trên da",
+        "Hình xăm ở vị trí lộ diện nếu có nội dung phản cảm, bạo lực, kích động tình dục, chống đối chế độ… hoặc có kích thước lớn",
+        "Tất cả phương án trên"
+      ],correct:0
+    },
+    {
+      question:"Trong công tác định hướng nghề nghiệp, nhà trường phổ thông có vai trò, trách nhiệm nào sau đây?",
+      answers:[
+        "Tổ chức khám sức khỏe nghĩa vụ và cấp giấy chứng nhận sơ tuyển cho học sinh.",
+        "Quyết định thay học sinh việc chọn trường quân đội hay công an để nộp hồ sơ.",
+        "Tổ chức các hoạt động tư vấn, hướng nghiệp, lồng ghép nội dung trong môn học GDQP-AN.",
+        "Tổ chức kỳ thi đánh giá năng lực riêng cho các trường Công an, Quân đội."
+      ],correct:2
+    },
+    {
+      question:"Việc định hướng nghề nghiệp quân sự, công an cho học sinh phổ thông là trách nhiệm phối hợp của những chủ thể nào?",
+      answers:[
+        "Chỉ riêng bản thân học sinh và giáo viên chủ nhiệm.",
+        "Gia đình, nhà trường phổ thông và cơ quan tuyển sinh của quân đội, công an.",
+        "Các trung tâm môi giới việc làm và các hội nhóm trên mạng xã hội.",
+        "Ủy ban nhân dân cấp tỉnh và Tổng cục Thống kê."
+      ],correct:1
+    },
+    {
+      question:"Quy trình bắt buộc và quan trọng đầu tiên đối với mọi thí sinh muốn đăng ký xét tuyển vào các trường Công an nhân dân là gì?",
+      answers:[
+        "Đăng ký trực tuyến trên cổng thông tin toàn quốc mà không cần qua địa phương.",
+        "Tiến hành sơ tuyển tại Công an cấp huyện nơi đăng ký thường trú.",
+        "Nộp hồ sơ trực tiếp tại các trường Đại học, Học viện Công an.",
+        "Chỉ cần tham gia kỳ thi tốt nghiệp THPT và chọn nguyện vọng."
+      ],correct:1
+    },
+    {
+      question:"Mục tiêu cơ bản trong nội dung đào tạo tại các trường Công an nhân dân là trang bị cho học viên những kiến thức, kỹ năng nào?",
+      answers:[
+        "Kiến thức chuyên sâu về tác chiến phòng thủ lãnh thổ và chiến tranh nhân dân.",
+        "Kiến thức về lĩnh vực kinh tế, quản trị kinh doanh và khởi nghiệp công nghệ.",
+        "Kiến thức về chính trị, pháp luật, nghiệp vụ công an, quân sự, võ thuật và kĩ năng đặc thù.",
+        "Kiến thức về ngoại giao quốc tế và kỹ thuật công nghiệp nặng."
+      ],correct:2
+    }
+  ],
+
+  REWARDS:[
+    {title:"🎖️ NHẬN HUÂN CHƯƠNG",text:"Thành tích huấn luyện xuất sắc được ghi nhận. Nhận ngẫu nhiên từ 1 đến 50 USD quân trang.",type:"randomMoney"},
+    {title:"⭐ THƯỞNG THÀNH TÍCH",text:"Hoàn thành nhiệm vụ vượt yêu cầu. Nhận ngẫu nhiên từ 10 đến 30 USD.",type:"randomMoneyRange",min:10,max:30},
+    {title:"🏅 HOÀN THÀNH XUẤT SẮC DIỄN TẬP",text:"Đơn vị hoàn thành xuất sắc nhiệm vụ diễn tập. Nhận ngay 20 USD.",type:"money",amount:20},
+    {title:"🥫 TIẾP TẾ QUÂN LƯƠNG",text:"Kho tiếp tế vừa chuyển thêm vật tư. Nhận 8 USD.",type:"money",amount:8},
+    {title:"⚡ LỆNH HÀNH QUÂN KHẨN",text:"Nhiệm vụ được hoàn thành trước thời hạn. Bạn được quyền đi thêm 1 lượt.",type:"extraTurn"}
+  ],
+
+  PENALTIES:[
+    {title:"📋 VI PHẠM KỶ LUẬT",text:"Báo cáo vi phạm kỷ luật được ghi nhận. Đơn vị bị trừ ngẫu nhiên từ 1 đến 50 USD.",type:"randomLoss"},
+    {title:"⏰ ĐI TRỄ GIỜ NGHIÊM HUẤN",text:"Không có mặt đúng giờ theo hiệu lệnh. Bị phạt 10 USD.",type:"money",amount:10},
+    {title:"🥾 HÀNH QUÂN KHÔNG ĐẠT",text:"Nhiệm vụ hành quân không đạt yêu cầu. Bị trừ 10 USD.",type:"money",amount:10},
+    {title:"📉 VI PHẠM ĐIỀU LỆNH",text:"Không chấp hành đầy đủ điều lệnh. Bạn mất lượt kế tiếp.",type:"skip"},
+    {title:"🧹 TRỰC BAN BỔ SUNG",text:"Bạn phải thực hiện nhiệm vụ bổ sung. Mất 1 lượt.",type:"skip"},
+    {title:"🗺️ HÀNH QUÂN THẤT BẠI",text:"Đội hình bị lạc hướng. Bạn phải lùi 2 ô.",type:"moveBack",amount:2},
+    {title:"🧱 SAI QUY TRÌNH",text:"Sai sót trong quy trình hành quân khiến đơn vị phải lùi 3 ô.",type:"moveBack",amount:3},
+    {title:"💗 NHƯỜNG AURA",text:"Lượt kế tiếp nếu vào ô Câu hỏi, quyền trả lời được chuyển cho người kế bên.",type:"aura"},
+    {title:"🎲 XÚC XẮC RỈ SÉT",text:"Trong 2 lượt tới, mỗi lần tung chỉ được tiến tối đa 1 ô.",type:"rust"},
+    {title:"🧡 LỜI NGUYỀN NHÂN PHẨM",text:"Hiệu ứng khiến một phần tổn thất được các đơn vị khác gánh thay.",type:"curse"}
+  ],
+
+  EVENTS:[
+    {title:"💰 TIẾP VIỆN",text:"Một nguồn tiếp tế bất ngờ vừa được điều đến.",effect:"money",amount:15},
+    {title:"🎶 TÀI NĂNG TRẺ",text:"Bạn vừa nhận được quyền mời bạn TẤN VIỆT hát 1 đoạn điệp khúc trong bài hát bất kỳ.",effect:"money",amount:5},
+    {title:"🗺️ MẤT PHƯƠNG HƯỚNG",text:"Đội hình bị mất phương hướng. Lùi 2 ô.",effect:"moveBack",amount:2},
+    {title:"🏃 HÀNH QUÂN VƯỢT TỐC",text:"Đội hình phải lùi 3 ô.",effect:"moveBack",amount:3},
+    {title:"📡 GỬI NHẦM TÍN HIỆU",text:"Tín hiệu được gửi nhầm vào kênh chỉ huy. Bay 10 USD.",effect:"loss",amount:10},
+    {title:"⚫⚪ ĐỔI TRẮNG THAY ĐEN",text:"Hai đơn vị đổi toàn bộ quân trang cho nhau.",effect:"swapMoney"},
+    {title:"📊 HIỆU SUẤT VƯỢT MỨC",text:"Thành tích huấn luyện vượt mục tiêu. Nhận 25 USD.",effect:"money",amount:25},
+    {title:"⚡ HÀNH QUÂN KHẨN",text:"Bộ chỉ huy cho phép đơn vị hành quân thêm một lượt.",effect:"extraTurn"}
+  ],
+
+  JAIL_REASONS:[
+    {title:"💸 VI PHẠM QUY ĐỊNH TÀI CHÍNH",text:"Bạn bị phát hiện nhận phong bì để ưu tiên xử lý một hồ sơ."},
+    {title:"🖥️ CAN THIỆP HỆ THỐNG",text:"Camera an ninh ghi nhận bạn cố tình can thiệp trái phép vào dữ liệu."},
+    {title:"📄 GIẢ MẠO CHỨNG TỪ",text:"Một bộ hồ sơ có chữ ký bất thường bị truy ngược về bạn."},
+    {title:"💰 THAM Ô QUỸ",text:"Một khoản tiền trong quỹ bị thiếu và dữ liệu kiểm kê dẫn đến bạn."},
+    {title:"🔐 TIẾT LỘ THÔNG TIN",text:"Bạn bị bắt vì làm lộ tài liệu nội bộ mật."},
+    {title:"🎭 GIẢ DANH CẤP TRÊN",text:"Bạn bị phát hiện sử dụng danh nghĩa cấp trên để thực hiện một giao dịch."},
+    {title:"📦 BIỂN THỦ TÀI SẢN",text:"Một số tài sản biến mất và dữ liệu kiểm kê dẫn đến bạn."},
+    {title:"⚠️ VI PHẠM QUY TRÌNH",text:"Bạn cố tình bỏ qua quy trình kiểm soát bắt buộc để hoàn thành mục tiêu."}
+  ]
+};
+
+const CONFIG={
+  BOARD_SIZE:30,
+  PLAYER_COUNT:3,
+  START_MONEY:0,
+  CORRECT_MONEY:10,
+  WRONG_MONEY:5,
+  MIN_MONEY:0,
+  MOVE_STEP_DELAY:480,
+  DICE_TICK:110,
+  DICE_DURATION:2160,
+  DICE_FINAL_HOLD:650,
+  DESTINATION_HOLD:850,
+  START_BONUS:20,
+  WIN_MONEY:50,
+  JAIL_RELEASE_COST:15,
+  MEGA_JACKPOT_CHANCE:.13,
+  MENTAL_COLLAPSE_CHANCE:.13,
+  JACKPOT_REWARD_BONUS:.36,
+  JACKPOT_PENALTY_REDUCTION:.20,
+  COLLAPSE_REWARD_REDUCTION:.36,
+  COLLAPSE_PENALTY_INCREASE:.20,
+  RUSTY_TURNS:2,
+  AURA_TURNS:1,
+  CURSE_TURNS:3,
+  CURSE_RATE:.20
+};
+
+const BOARD_LAYOUT=[
+  "start","question","reward","event","question","penalty",
+  "jail","reward","event","question","penalty","jackpot",
+  "reward","question","event","penalty","question","reward",
+  "event","penalty","question","collapse","reward","event",
+  "penalty","question","reward","event","question","penalty"
+];
+
+const TILE_META={
+  start:{label:"DOANH TRẠI",icon:"🚩",mini:"+$20 / vòng"},
+  question:{label:"KIỂM TRA",icon:"❓",mini:"+$10 / -$5"},
+  reward:{label:"CHIẾN CÔNG",icon:"🎖️",mini:"Phần thưởng"},
+  event:{label:"MỆNH LỆNH",icon:"📡",mini:"Bất ngờ"},
+  penalty:{label:"KỶ LUẬT",icon:"⚠️",mini:"Cẩn thận"},
+  jail:{label:"GIỮ CHÂN",icon:"⛓️",mini:"1 hoặc 6 để thoát"},
+  jackpot:{label:"ĐẠI THẮNG",icon:"🎰",mini:"13% • +36%"},
+  collapse:{label:"ÁP LỰC",icon:"🧠",mini:"13% • ±36%"}
+};
+
+let players=[];
+let currentPlayerIndex=0;
+let isRolling=false;
+let modalOpen=false;
+let currentQuestion=null;
+let currentQuestionAnswers=[];
+let currentRound=1;
+let gameEnded=false;
+let moveAnimationRunning=false;
+let pendingExtraTurn=false;
+let startPlayerChosen=false;
+let turnNumber=0;
+let lastDiceValue=0;
+let lastDestination=-1;
+let startRandomizerRunning=false;
+
+const $=id=>document.getElementById(id);
+
+const boardElement=$("board");
+const rollButton=$("rollButton");
+const resetButton=$("resetButton");
+const rulesButton=$("rulesButton");
+const diceCube=$("diceCube");
+const mobileDice=$("mobileDice");
+const diceValueText=$("diceValueText");
+const diceHelpText=$("diceHelpText");
+const playerListElement=$("playerList");
+const eventLogElement=$("eventLog");
+const currentPlayerNameElement=$("currentPlayerName");
+const currentPlayerScoreElement=$("currentPlayerScore");
+const currentPlayerDotElement=$("currentPlayerDot");
+const currentPlayerStatusElement=$("currentPlayerStatus");
+const dashboardStatusElement=$("dashboardStatus");
+const modifierRow=$("modifierRow");
+const effectBanner=$("effectBanner");
+const roundNumberElement=$("roundNumber");
+const turnBadge=$("turnBadge");
+const modalBackdrop=$("modalBackdrop");
+const modalElement=$("modal");
+const toastContainer=$("toastContainer");
+const confettiContainer=$("confettiContainer");
+const diceOverlay=$("diceOverlay");
+const bigDice=$("bigDice");
+const bigDiceNumber=$("bigDiceNumber");
+const bigDiceSubtitle=$("bigDiceSubtitle");
+const diceOverlayCaption=$("diceOverlayCaption");
+const rollPreview=$("rollPreview");
+const rollPreviewText=$("rollPreviewText");
+
+function wait(ms){return new Promise(resolve=>setTimeout(resolve,ms))}
+function randomInt(min,max){return Math.floor(Math.random()*(max-min+1))+min}
+function randomItem(array){return array&&array.length?array[Math.floor(Math.random()*array.length)]:null}
+function formatMoney(value){return `$${Math.max(CONFIG.MIN_MONEY,Math.round(value))}`}
+function escapeHtml(value){
+  return String(value)
+    .replaceAll("&","&amp;")
+    .replaceAll("<","&lt;")
+    .replaceAll(">","&gt;")
+    .replaceAll('"',"&quot;")
+    .replaceAll("'","&#039;");
+}
+
+const DICE_PATTERNS={
+  1:[4],
+  2:[0,8],
+  3:[0,4,8],
+  4:[0,2,6,8],
+  5:[0,2,4,6,8],
+  6:[0,2,3,5,6,8]
+};
+
+function createPips(container){
+  container.innerHTML="";
+  for(let i=0;i<9;i++){
+    const pip=document.createElement("span");
+    pip.className=container.classList.contains("big-dice-face")
+      ?"big-pip"
+      :container.classList.contains("mobile-dice")
+        ?"mobile-pip"
+        :"dice-pip";
+    container.appendChild(pip);
+  }
+}
+
+function setupDiceFaces(){
+  document.querySelectorAll(".dice-face,.big-dice-face").forEach(createPips);
+  createPips(mobileDice);
+  renderDiceValue(0);
+}
+
+function paintPips(container,value){
+  container.querySelectorAll(".dice-pip,.big-pip,.mobile-pip").forEach((pip,index)=>{
+    pip.classList.toggle("active",Boolean(DICE_PATTERNS[value]?.includes(index)));
+  });
+}
+
+function renderDiceValue(value){
+  document.querySelectorAll(".dice-face,.big-dice-face").forEach(face=>paintPips(face,value));
+  paintPips(mobileDice,value);
+
+  diceValueText.textContent=value?"KẾT QUẢ "+value:"Sẵn sàng";
+  diceHelpText.textContent=value
+    ?`Tiến ${value} chốt nếu không có hiệu ứng đặc biệt.`
+    :"Chờ lệnh hành quân.";
+  bigDiceNumber.textContent=value?String(value):"?";
+}
+
+function getDiceRotation(value){
+  return {
+    1:"rotateX(0deg) rotateY(0deg) rotateZ(0deg)",
+    2:"rotateX(90deg) rotateY(0deg) rotateZ(0deg)",
+    3:"rotateX(0deg) rotateY(-90deg) rotateZ(0deg)",
+    4:"rotateX(0deg) rotateY(90deg) rotateZ(0deg)",
+    5:"rotateX(-90deg) rotateY(0deg) rotateZ(0deg)",
+    6:"rotateX(180deg) rotateY(0deg) rotateZ(0deg)"
+  }[value]||"rotateX(0deg) rotateY(0deg) rotateZ(0deg)";
+}
+
+function renderDice(value){
+  lastDiceValue=value;
+  renderDiceValue(value);
+  if(value>=1&&value<=6){
+    diceCube.style.transform=getDiceRotation(value);
+  }
+}
+
+function getBoardPositions(){
+  const positions=[];
+  for(let col=1;col<=12;col++)positions.push({row:1,col});
+  for(let row=2;row<=8;row++)positions.push({row,col:12});
+  for(let col=11;col>=1;col--)positions.push({row:8,col});
+  for(let row=7;row>=2;row--)positions.push({row,col:1});
+  return positions;
+}
+
+function createPlayers(){
+  players=CONTENT.PLAYERS.map((template,index)=>({
+    id:index+1,
+    name:template.name,
+    short:template.short,
+    color:template.color,
+    face:template.face,
+    money:CONFIG.START_MONEY,
+    position:0,
+    hasVisitedQuestion:false,
+    inJail:false,
+    jailReason:null,
+    skipNext:false,
+    jackpotActive:false,
+    collapseActive:false,
+    auraTurns:0,
+    rustTurns:0,
+    curseTurns:0
+  }));
+}
+
+function buildBoard(){
+  boardElement.querySelectorAll(".tile").forEach(tile=>tile.remove());
+  const positions=getBoardPositions();
+
+  BOARD_LAYOUT.forEach((type,index)=>{
+    const meta=TILE_META[type];
+    const pos=positions[index];
+    const tile=document.createElement("div");
+
+    tile.className=`tile tile-type-${type}`;
+    tile.dataset.index=String(index);
+    tile.style.gridRow=String(pos.row);
+    tile.style.gridColumn=String(pos.col);
+
+    const number=document.createElement("div");
+    number.className="tile-number";
+    number.textContent=String(index+1);
+
+    const icon=document.createElement("div");
+    icon.className="tile-icon";
+    icon.textContent=meta.icon;
+
+    const label=document.createElement("div");
+    label.className="tile-label";
+    label.textContent=meta.label;
+
+    const mini=document.createElement("div");
+    mini.className="tile-mini";
+    mini.textContent=meta.mini;
+
+    tile.append(number,icon,label,mini);
+    boardElement.appendChild(tile);
+  });
+}
+
+function renderPieces(activePlayerId=null){
+  boardElement.querySelectorAll(".pieces").forEach(element=>element.remove());
+
+  const groups=new Map();
+
+  players.forEach(player=>{
+    if(!groups.has(player.position))groups.set(player.position,[]);
+    groups.get(player.position).push(player);
+  });
+
+  groups.forEach((group,position)=>{
+    const tile=boardElement.querySelector(`.tile[data-index="${position}"]`);
+    if(!tile)return;
+
+    const pieces=document.createElement("div");
+    pieces.className="pieces";
+
+    group.forEach(player=>{
+      const piece=document.createElement("div");
+      piece.className=`piece p${player.id}`;
+      if(player.id===activePlayerId)piece.classList.add("active-piece");
+      piece.textContent=player.face;
+      piece.title=player.name;
+      pieces.appendChild(piece);
+    });
+
+    tile.appendChild(pieces);
+  });
+}
+
+function clearTileEffects(){
+  boardElement.querySelectorAll(".tile").forEach(tile=>{
+    tile.classList.remove("step-active","destination");
+    tile.querySelector(".destination-label")?.remove();
+  });
+}
+
+function highlightTile(position){
+  clearTileEffects();
+  const tile=boardElement.querySelector(`.tile[data-index="${position}"]`);
+  if(tile)tile.classList.add("step-active");
+}
+
+function pulseDestination(position){
+  clearTileEffects();
+  const tile=boardElement.querySelector(`.tile[data-index="${position}"]`);
+  if(!tile)return;
+
+  tile.classList.add("destination");
+
+  const label=document.createElement("div");
+  label.className="destination-label";
+  label.textContent=`📍 CHỐT ${position+1}`;
+  tile.appendChild(label);
+
+  lastDestination=position;
+}
+
+function renderCurrentPlayer(){
+  if(!players.length)return;
+
+  const player=players[currentPlayerIndex];
+
+  currentPlayerNameElement.textContent=startPlayerChosen?player.name:"Đang xác định...";
+  currentPlayerDotElement.style.background=player.color;
+  currentPlayerDotElement.style.color=player.color;
+  currentPlayerScoreElement.textContent=formatMoney(player.money);
+  roundNumberElement.textContent=String(currentRound);
+
+  turnBadge.textContent=startPlayerChosen?`LƯỢT: ${player.short}`:"CHỜ XÁC ĐỊNH LƯỢT";
+  turnBadge.classList.toggle("active",startPlayerChosen);
+
+  if(!startPlayerChosen){
+    currentPlayerStatusElement.textContent="🎯 CHỜ XÁC ĐỊNH ĐƠN VỊ ĐI ĐẦU";
+    dashboardStatusElement.textContent="Hãy xác định đơn vị được quyền hành quân đầu tiên.";
+  }else if(gameEnded){
+    currentPlayerStatusElement.textContent="🏁 CHIẾN DỊCH ĐÃ KẾT THÚC";
+    dashboardStatusElement.textContent="Đã có đơn vị đạt đủ mục tiêu.";
+  }else if(player.inJail){
+    currentPlayerStatusElement.textContent="⛓️ ĐƠN VỊ ĐANG BỊ GIỮ CHÂN";
+    dashboardStatusElement.textContent="Cần đổ 1 hoặc 6 hoặc trả phí giải phóng.";
+  }else if(player.skipNext){
+    currentPlayerStatusElement.textContent="⏭️ LƯỢT KẾ TIẾP SẼ BỊ BỎ";
+    dashboardStatusElement.textContent="Hiệu ứng hình phạt đang chờ xử lý.";
+  }else{
+    currentPlayerStatusElement.textContent=`📍 ĐANG Ở CHỐT ${player.position+1}`;
+    dashboardStatusElement.textContent=isRolling
+      ?"🎲 Đang xử lý lệnh hành quân..."
+      :"🎯 Sẵn sàng nhận lệnh tung xúc xắc.";
+  }
+
+  rollButton.disabled=
+    !startPlayerChosen||
+    isRolling||
+    moveAnimationRunning||
+    modalOpen||
+    gameEnded;
+}
+
+function renderPlayerList(){
+  playerListElement.innerHTML="";
+
+  players.forEach((player,index)=>{
+    const row=document.createElement("div");
+    row.className=`player-row ${index===currentPlayerIndex&&startPlayerChosen?"active":""}`;
+
+    const avatar=document.createElement("div");
+    avatar.className="player-avatar";
+    avatar.style.color=player.color;
+    avatar.textContent=player.face;
+
+    const info=document.createElement("div");
+
+    const name=document.createElement("div");
+    name.className="player-name";
+    name.textContent=player.name;
+
+    const meta=document.createElement("div");
+    meta.className="player-meta";
+    meta.textContent=`Chốt ${player.position+1} • ${player.short}`;
+
+    info.append(name,meta);
+
+    const money=document.createElement("div");
+    money.className="player-money";
+    money.textContent=formatMoney(player.money);
+
+    const effects=document.createElement("div");
+    effects.className="player-effects";
+
+    const effectList=[
+      [player.inJail,"⛓️ GIỮ CHÂN"],
+      [player.skipNext,"⏭️ BỎ LƯỢT"],
+      [player.auraTurns>0,`💗 AURA ${player.auraTurns}`],
+      [player.rustTurns>0,`🎲 RỈ SÉT ${player.rustTurns}`],
+      [player.curseTurns>0,`🧡 NGUYỀN ${player.curseTurns}`],
+      [player.jackpotActive,"🎰 ĐẠI THẮNG"],
+      [player.collapseActive,"🧠 ÁP LỰC"]
+    ];
+
+    effectList.forEach(([active,text])=>{
+      if(!active)return;
+      const chip=document.createElement("span");
+      chip.className="effect-chip";
+      chip.textContent=text;
+      effects.appendChild(chip);
+    });
+
+    row.append(avatar,info,money,effects);
+    playerListElement.appendChild(row);
+  });
+}
+
+function renderModifiers(){
+  modifierRow.innerHTML="";
+
+  if(!players.length)return;
+
+  const player=players[currentPlayerIndex];
+
+  const modifiers=[
+    [player.auraTurns>0,`💗 AURA ${player.auraTurns}`,"pink"],
+    [player.rustTurns>0,`🎲 RỈ SÉT ${player.rustTurns}`,"orange"],
+    [player.curseTurns>0,`🧡 NGUYỀN ${player.curseTurns}`,"bad"],
+    [player.jackpotActive,"🎰 ĐẠI THẮNG","gold"],
+    [player.collapseActive,"🧠 ÁP LỰC","purple"],
+    [player.inJail,"⛓️ GIỮ CHÂN","bad"],
+    [player.skipNext,"⏭️ BỎ LƯỢT","bad"]
+  ];
+
+  modifiers.forEach(([active,text,kind])=>{
+    if(!active)return;
+    const chip=document.createElement("span");
+    chip.className=`modifier ${kind}`;
+    chip.textContent=text;
+    modifierRow.appendChild(chip);
+  });
+
+  effectBanner.textContent=
+    player.money>=CONFIG.WIN_MONEY
+      ?"🏆 ĐỦ ĐIỀU KIỆN CHIẾN THẮNG"
+      :`🎯 Mục tiêu chiến thắng: ${formatMoney(CONFIG.WIN_MONEY)}`;
+}
+
+function renderAll(activePlayerId=null){
+  renderCurrentPlayer();
+  renderPlayerList();
+  renderModifiers();
+  renderPieces(activePlayerId);
+}
+
+function addLog(message){
+  const item=document.createElement("div");
+  item.className="log-item";
+  item.textContent=message;
+  eventLogElement.prepend(item);
+
+  while(eventLogElement.children.length>45){
+    eventLogElement.lastElementChild.remove();
+  }
+}
+
+function showToast(message){
+  const toast=document.createElement("div");
+  toast.className="toast";
+  toast.textContent=message;
+  toastContainer.appendChild(toast);
+
+  setTimeout(()=>{
+    toast.style.opacity="0";
+    toast.style.transform="translateY(10px)";
+    setTimeout(()=>toast.remove(),250);
+  },2600);
+}
+
+function createConfetti(count=55){
+  const colors=["#63d17b","#e0bd67","#63d4c0","#a58be8","#e35b55","#f5f8f2"];
+
+  for(let i=0;i<count;i++){
+    const piece=document.createElement("div");
+    piece.className="confetti";
+    piece.style.left=`${Math.random()*100}%`;
+    piece.style.background=randomItem(colors);
+    piece.style.setProperty("--x",`${randomInt(-220,220)}px`);
+    piece.style.setProperty("--r",`${randomInt(360,1440)}deg`);
+    piece.style.animationDuration=`${1.7+Math.random()*1.3}s`;
+    piece.style.animationDelay=`${Math.random()*.25}s`;
+    confettiContainer.appendChild(piece);
+    setTimeout(()=>piece.remove(),3800);
+  }
+}
+
+function launchConfetti(){createConfetti(70)}
+
+function showModal(){
+  modalOpen=true;
+  modalBackdrop.classList.add("show");
+  modalBackdrop.setAttribute("aria-hidden","false");
+  renderAll();
+}
+
+function closeModal(){
+  modalOpen=false;
+  currentQuestion=null;
+  currentQuestionAnswers=[];
+  modalBackdrop.classList.remove("show");
+  modalBackdrop.setAttribute("aria-hidden","true");
+  renderAll();
+}
+
+function showInfoModalPromise(title,description,icon="ℹ️",buttonClass="secondary",buttonText="TIẾP TỤC"){
+  return new Promise(resolve=>{
+    showModal();
+
+    modalElement.innerHTML=`
+      <div class="modal-icon">${icon}</div>
+      <div class="modal-title">${title}</div>
+      <div class="modal-description">${description}</div>
+      <div class="modal-actions">
+        <button class="modal-button ${buttonClass}" id="modalContinueButton" type="button">${buttonText}</button>
+      </div>
+    `;
+
+    $("modalContinueButton").addEventListener("click",()=>{
+      SFX.click();
+      closeModal();
+      resolve();
+    });
+  });
+}
+
+function showRulesPopup(){
+  showModal();
+
+  const canChoose=!startPlayerChosen&&!startRandomizerRunning;
+
+  modalElement.innerHTML=`
+    <div class="modal-icon">🎖️</div>
+    <div class="modal-title">QUY TẮC CHIẾN DỊCH</div>
+
+    <div class="modal-description" style="text-align:left">
+      <div class="special-card">
+        <div class="special-title">🎲 1. HÀNH QUÂN</div>
+        <div class="special-text">
+          Mỗi lượt tung xúc xắc từ 1 đến 6 và di chuyển quanh 30 chốt.
+          Khi đi qua DOANH TRẠI, nhận <strong class="money">+$${CONFIG.START_BONUS}</strong>.
+        </div>
+      </div>
+
+      <div class="special-card">
+        <div class="special-title">❓ 2. TRẠM KIỂM TRA</div>
+        <div class="special-text">
+          Trả lời đúng nhận <strong class="money">+$${CONFIG.CORRECT_MONEY}</strong>.
+          Trả lời sai bị trừ <strong class="money-negative">$${CONFIG.WRONG_MONEY}</strong>.
+        </div>
+      </div>
+
+      <div class="special-card">
+        <div class="special-title">🎖️ 3. CHỐT ĐẶC BIỆT</div>
+        <div class="special-text">
+          Chiến Công, Mệnh Lệnh, Kỷ Luật, Giữ Chân, Đại Thắng và Áp Lực
+          tạo ra các hiệu ứng tương ứng.
+        </div>
+      </div>
+
+      <div class="special-card">
+        <div class="special-title">🏆 4. ĐIỀU KIỆN CHIẾN THẮNG</div>
+        <div class="special-text">
+          Đơn vị đầu tiên đạt <strong class="money">$${CONFIG.WIN_MONEY}</strong>
+          quân trang sẽ hoàn thành chiến dịch.
+        </div>
+      </div>
+    </div>
+
+    <div class="modal-actions">
+      ${
+        canChoose
+          ? `<button class="modal-button gold" id="chooseStartButton" type="button">🎯 XÁC ĐỊNH ĐƠN VỊ ĐI ĐẦU</button>`
+          : `<button class="modal-button secondary" id="closeRulesButton" type="button">TIẾP TỤC</button>`
+      }
+    </div>
+  `;
+
+  if(canChoose){
+    $("chooseStartButton").addEventListener("click",()=>{
+      SFX.click();
+      startPlayerRandomizer();
+    });
+  }else{
+    $("closeRulesButton").addEventListener("click",()=>{
+      SFX.click();
+      closeModal();
+    });
+  }
+}
+
+async function startPlayerRandomizer(){
+  if(startRandomizerRunning)return;
+
+  startRandomizerRunning=true;
+  modalOpen=true;
+
+  modalElement.innerHTML=`
+    <div class="modal-icon">🎯</div>
+    <div class="modal-title">XÁC ĐỊNH ĐƠN VỊ ĐI ĐẦU</div>
+
+    <div class="random-arena">
+      <div class="random-ring"></div>
+      <div class="random-ring2"></div>
+      <div class="random-ring3"></div>
+      <div id="randomPlayer" class="random-player spinning">🎖️</div>
+    </div>
+
+    <div id="randomName" class="random-name">ĐANG QUAY...</div>
+    <div class="random-sub">Hệ thống đang chọn ngẫu nhiên đơn vị khởi hành.</div>
+  `;
+
+  SFX.start();
+
+  const randomPlayer=$("randomPlayer");
+  const randomName=$("randomName");
+
+  for(let i=0;i<16;i++){
+    const candidate=players[i%players.length];
+    randomPlayer.textContent=candidate.face;
+    randomPlayer.style.borderColor=candidate.color;
+    randomName.textContent=candidate.name;
+    await wait(80+i*12);
+  }
+
+  const winner=randomItem(players);
+  currentPlayerIndex=players.findIndex(player=>player.id===winner.id);
+  startPlayerChosen=true;
+  startRandomizerRunning=false;
+
+  randomPlayer.classList.remove("spinning");
+  randomPlayer.textContent=winner.face;
+  randomPlayer.style.borderColor=winner.color;
+  randomName.textContent=winner.name;
+
+  SFX.extraTurn();
+  addLog(`🎯 ${winner.name} được xác định là đơn vị đi đầu.`);
+  showToast(`🎯 ${winner.name} đi đầu chiến dịch!`);
+
+  await wait(800);
+  closeModal();
+  renderAll(winner.id);
+}
+
+function calculateRewardAmount(player,base){
+  let amount=base;
+
+  if(player.jackpotActive){
+    amount=Math.round(amount*(1+CONFIG.JACKPOT_REWARD_BONUS));
+  }
+
+  if(player.collapseActive){
+    amount=Math.round(amount*(1-CONFIG.COLLAPSE_REWARD_REDUCTION));
+  }
+
+  return Math.max(0,amount);
+}
+
+function calculatePenaltyAmount(player,base){
+  let amount=base;
+
+  if(player.jackpotActive){
+    amount=Math.round(amount*(1-CONFIG.JACKPOT_PENALTY_REDUCTION));
+  }
+
+  if(player.collapseActive){
+    amount=Math.round(amount*(1+CONFIG.COLLAPSE_PENALTY_INCREASE));
+  }
+
+  return Math.max(0,amount);
+}
+
+function applyRewardMoney(player,base){
+  const gained=calculateRewardAmount(player,base);
+  player.money+=gained;
+  return gained;
+}
+
+function applyPenaltyMoney(player,base){
+  const calculated=calculatePenaltyAmount(player,base);
+  const lost=Math.min(calculated,player.money);
+
+  player.money=Math.max(CONFIG.MIN_MONEY,player.money-lost);
+  triggerCurseForMoneyLoss(player,lost);
+
+  return lost;
+}
+
+function triggerCurseForMoneyLoss(sourcePlayer,amount){
+  if(amount<=0)return;
+
+  players.forEach(cursed=>{
+    if(cursed.id===sourcePlayer.id||cursed.curseTurns<=0)return;
+
+    const burden=Math.floor(amount*CONFIG.CURSE_RATE);
+    const actualBurden=Math.min(burden,cursed.money);
+
+    if(actualBurden<=0)return;
+
+    cursed.money-=actualBurden;
+
+    addLog(`🧡 ${cursed.name} gánh ${formatMoney(actualBurden)} thay cho ${sourcePlayer.name}.`);
+    showToast(`🧡 ${cursed.name} gánh ${formatMoney(actualBurden)}!`);
+  });
+}
+
+function triggerCurseForMoveBack(sourcePlayer,actualSteps){
+  if(actualSteps<=0)return;
+
+  players.forEach(cursed=>{
+    if(cursed.id===sourcePlayer.id||cursed.curseTurns<=0||cursed.position<=0)return;
+
+    const burdenSteps=Math.max(1,Math.floor(actualSteps*CONFIG.CURSE_RATE));
+    const actualBurden=Math.min(burdenSteps,cursed.position);
+
+    if(actualBurden<=0)return;
+
+    cursed.position-=actualBurden;
+
+    addLog(`🧡 ${cursed.name} gánh ${actualBurden} chốt lùi thay cho ${sourcePlayer.name}.`);
+    showToast(`🧡 ${cursed.name} lùi thay ${actualBurden} chốt!`);
+  });
+}
+
+function showRollPreview(player,value){
+  const steps=player.rustTurns>0?1:value;
+  const destination=(player.position+steps)%CONFIG.BOARD_SIZE;
+  rollPreviewText.textContent=`chốt ${destination+1}`;
+  rollPreview.classList.add("show");
+}
+
+function hideRollPreview(){rollPreview.classList.remove("show")}
+
+function showDiceOverlay(){
+  diceOverlay.classList.add("show");
+  diceOverlay.setAttribute("aria-hidden","false");
+}
+
+function hideDiceOverlay(){
+  diceOverlay.classList.remove("show");
+  diceOverlay.setAttribute("aria-hidden","true");
+  bigDice.classList.remove("rolling");
+}
+
+async function animateDice(finalValue){
+  showDiceOverlay();
+  bigDice.classList.add("rolling");
+  bigDiceSubtitle.textContent="Đang xác định kết quả...";
+
+  const started=performance.now();
+
+  while(performance.now()-started<CONFIG.DICE_DURATION){
+    const value=randomInt(1,6);
+    renderDiceValue(value);
+    bigDiceNumber.textContent=String(value);
+    SFX.tick();
+    await wait(CONFIG.DICE_TICK);
+  }
+
+  bigDice.classList.remove("rolling");
+  renderDice(finalValue);
+  bigDiceNumber.textContent=String(finalValue);
+  bigDiceSubtitle.textContent=`KẾT QUẢ: ${finalValue}`;
+  SFX.diceFinal(finalValue);
+
+  await wait(CONFIG.DICE_FINAL_HOLD);
+}
+
+async function movePlayer(player,steps){
+  moveAnimationRunning=true;
+  clearTileEffects();
+
+  if(steps>0){
+    for(let step=1;step<=steps;step++){
+      const oldPosition=player.position;
+
+      player.position=(player.position+1)%CONFIG.BOARD_SIZE;
+
+      if(player.position===0&&oldPosition!==0){
+        const bonus=applyRewardMoney(player,CONFIG.START_BONUS);
+
+        addLog(`🚩 ${player.name} đi qua DOANH TRẠI và nhận +$${bonus}.`);
+        showToast(`🚩 DOANH TRẠI! +$${bonus}`);
+        SFX.startBonus();
+      }else{
+        SFX.move();
+      }
+
+      highlightTile(player.position);
+      renderAll(player.id);
+      await wait(CONFIG.MOVE_STEP_DELAY);
+    }
+  }else if(steps<0){
+    const actualSteps=Math.min(Math.abs(steps),player.position);
+
+    for(let i=0;i<actualSteps;i++){
+      player.position=Math.max(0,player.position-1);
+      SFX.moveBack();
+      highlightTile(player.position);
+      renderAll(player.id);
+      await wait(CONFIG.MOVE_STEP_DELAY);
+    }
+
+    triggerCurseForMoveBack(player,actualSteps);
+  }
+
+  moveAnimationRunning=false;
+  pulseDestination(player.position);
+  renderAll(player.id);
+  await wait(500);
+}
+
+function getNextPlayer(player){
+  const index=players.findIndex(item=>item.id===player.id);
+  return index<0
+    ?players[(currentPlayerIndex+1)%players.length]
+    :players[(index+1)%players.length];
+}
+
+function showQuestion(player,responder=player){
+  return new Promise(resolve=>{
+    currentQuestion=randomItem(CONTENT.QUESTIONS);
+    currentQuestionAnswers=[];
+    showModal();
+
+    const aura=responder.id!==player.id;
+
+    modalElement.innerHTML=`
+      <div class="modal-icon">❓</div>
+      <div class="modal-title">${aura?"💗 NHƯỜNG AURA — ":""}TRẠM KIỂM TRA</div>
+
+      <div class="modal-description">
+        Người trả lời:
+        <strong>${escapeHtml(responder.name)}</strong>
+        <br>
+        Đúng: <strong class="money">+$${CONFIG.CORRECT_MONEY}</strong>
+        <br>
+        Sai: <strong class="money-negative">-$${CONFIG.WRONG_MONEY}</strong>
+        ${
+          aura
+            ? `<div class="special-card">
+                <div class="special-title">💗 NHƯỜNG AURA</div>
+                <div class="special-text">
+                  ${escapeHtml(player.name)} nhường quyền trả lời cho ${escapeHtml(responder.name)}.
+                </div>
+              </div>`
+            :""
+        }
+      </div>
+
+      <div class="question-box">
+        <div class="question-text">${escapeHtml(currentQuestion.question)}</div>
+        <div id="answers" class="answer-grid"></div>
+        <div id="questionResult" style="margin-top:14px;min-height:24px"></div>
+      </div>
+    `;
+
+    const answersElement=$("answers");
+    const resultElement=$("questionResult");
+
+    currentQuestion.answers.forEach((answer,index)=>{
+      const button=document.createElement("button");
+      button.className="answer-button";
+      button.type="button";
+      button.dataset.answer=String(index);
+      button.textContent=`${String.fromCharCode(65+index)}. ${answer}`;
+
+      button.addEventListener("click",async()=>{
+        if(currentQuestionAnswers.length)return;
+
+        currentQuestionAnswers=[index];
+
+        answersElement.querySelectorAll(".answer-button").forEach(item=>{
+          item.disabled=true;
+
+          if(Number(item.dataset.answer)===currentQuestion.correct){
+            item.classList.add("correct");
+          }
+        });
+
+        const correct=index===currentQuestion.correct;
+
+        if(correct){
+          button.classList.add("correct");
+          const gained=applyRewardMoney(responder,CONFIG.CORRECT_MONEY);
+
+          SFX.correct();
+          resultElement.innerHTML=`<span class="money">✅ ĐÚNG! +${formatMoney(gained)}</span>`;
+          addLog(`✅ ${responder.name} trả lời đúng và nhận +$${gained}.`);
+          showToast(`✅ Đúng — ${responder.name} +${formatMoney(gained)}!`);
+        }else{
+          button.classList.add("wrong");
+          const lost=applyPenaltyMoney(responder,CONFIG.WRONG_MONEY);
+
+          SFX.wrong();
+          resultElement.innerHTML=`<span class="money-negative">❌ SAI! -${formatMoney(lost)}</span>`;
+          addLog(`❌ ${responder.name} trả lời sai và bị trừ $${lost}.`);
+          showToast(`❌ Sai — ${responder.name} -${formatMoney(lost)}!`);
+        }
+
+        responder.hasVisitedQuestion=true;
+        renderAll();
+
+        await wait(1000);
+
+        modalElement.innerHTML=`
+          <div class="modal-icon">${correct?"✅":"❌"}</div>
+          <div class="modal-title">${correct?"NHIỆM VỤ HOÀN THÀNH":"NHIỆM VỤ KHÔNG ĐẠT"}</div>
+          <div class="modal-description">
+            ${
+              correct
+                ? `Đáp án chính xác.<br><br><strong class="money">+$${CONFIG.CORRECT_MONEY}</strong> quân trang.`
+                : `Đáp án đúng là:<br><br><strong>${escapeHtml(currentQuestion.answers[currentQuestion.correct])}</strong>`
+            }
+          </div>
+          <div class="modal-actions">
+            <button class="modal-button ${correct?"":"danger"}" id="questionContinue" type="button">
+              CHẤP HÀNH — TIẾP TỤC
+            </button>
+          </div>
+        `;
+
+        $("questionContinue").addEventListener("click",()=>{
+          SFX.click();
+          closeModal();
+          resolve();
+        });
+      });
+
+      answersElement.appendChild(button);
+    });
+  });
+}
+
+async function resolveReward(player){
+  const reward=randomItem(CONTENT.REWARDS);
+  if(!reward)return;
+
+  SFX.reward();
+
+  if(reward.type==="randomMoney"){
+    const gained=applyRewardMoney(player,randomInt(1,50));
+    addLog(`🎖️ ${player.name} nhận chiến công +$${gained}.`);
+    launchConfetti();
+    renderAll();
+
+    await showInfoModalPromise(
+      reward.title,
+      `${escapeHtml(reward.text)}<br><br>Thực nhận: <strong class="money">+$${gained}</strong>`,
+      "🎖️","gold"
+    );
+    return;
+  }
+
+  if(reward.type==="randomMoneyRange"){
+    const gained=applyRewardMoney(player,randomInt(reward.min,reward.max));
+    addLog(`🏅 ${player.name} hoàn thành xuất sắc nhiệm vụ +$${gained}.`);
+    launchConfetti();
+    renderAll();
+
+    await showInfoModalPromise(
+      reward.title,
+      `${escapeHtml(reward.text)}<br><br>Thực nhận: <strong class="money">+$${gained}</strong>`,
+      "🏅","gold"
+    );
+    return;
+  }
+
+  if(reward.type==="money"){
+    const gained=applyRewardMoney(player,reward.amount);
+    addLog(`🎁 ${player.name} nhận +$${gained}.`);
+    launchConfetti();
+    renderAll();
+
+    await showInfoModalPromise(
+      reward.title,
+      `${escapeHtml(reward.text)}<br><br>Thực nhận: <strong class="money">+$${gained}</strong>`,
+      "🎖️","gold"
+    );
+    return;
+  }
+
+  if(reward.type==="extraTurn"){
+    pendingExtraTurn=true;
+    addLog(`⚡ ${player.name} nhận lệnh hành quân thêm một lượt.`);
+    renderAll();
+
+    await showInfoModalPromise(
+      reward.title,
+      escapeHtml(reward.text),
+      "⚡","primary"
+    );
+  }
+}
+
+async function resolvePenalty(player){
+  const penalty=randomItem(CONTENT.PENALTIES);
+  if(!penalty)return;
+
+  SFX.penalty();
+
+  if(penalty.type==="randomLoss"){
+    const lost=applyPenaltyMoney(player,randomInt(1,50));
+    addLog(`💸 ${player.name} bị trừ $${lost}.`);
+    renderAll();
+
+    await showInfoModalPromise(
+      penalty.title,
+      `${escapeHtml(penalty.text)}<br><br><strong class="money-negative">-$${lost}</strong>`,
+      "📋","danger"
+    );
+    return;
+  }
+
+  if(penalty.type==="money"){
+    const lost=applyPenaltyMoney(player,penalty.amount);
+    addLog(`⚠️ ${player.name} bị phạt $${lost}.`);
+    renderAll();
+
+    await showInfoModalPromise(
+      penalty.title,
+      `${escapeHtml(penalty.text)}<br><br><strong class="money-negative">-$${lost}</strong>`,
+      "⚠️","danger"
+    );
+    return;
+  }
+
+  if(penalty.type==="skip"){
+    player.skipNext=true;
+    addLog(`⏭️ ${player.name} sẽ mất lượt kế tiếp.`);
+    renderAll();
+
+    await showInfoModalPromise(
+      penalty.title,
+      escapeHtml(penalty.text),
+      "⏭️","danger"
+    );
+    return;
+  }
+
+  if(penalty.type==="moveBack"){
+    const actualSteps=Math.min(penalty.amount,player.position);
+    addLog(`🔙 ${player.name} lùi ${actualSteps} chốt.`);
+    renderAll();
+
+    await showInfoModalPromise(
+      penalty.title,
+      `${escapeHtml(penalty.text)}<br><br>Lùi <strong>${actualSteps}</strong> chốt.`,
+      "🗺️","danger"
+    );
+
+    await movePlayer(player,-actualSteps);
+    return;
+  }
+
+  if(penalty.type==="aura"){
+    player.auraTurns=CONFIG.AURA_TURNS;
+    addLog(`💗 ${player.name} dính NHƯỜNG AURA.`);
+    renderAll();
+
+    await showInfoModalPromise(
+      penalty.title,
+      `${escapeHtml(penalty.text)}<br><br>Hiệu lực: <strong>${CONFIG.AURA_TURNS} lượt</strong>.`,
+      "💗"
+    );
+    return;
+  }
+
+  if(penalty.type==="rust"){
+    player.rustTurns=CONFIG.RUSTY_TURNS;
+    addLog(`🎲 ${player.name} dính XÚC XẮC RỈ SÉT — ${CONFIG.RUSTY_TURNS} lượt.`);
+    renderAll();
+
+    await showInfoModalPromise(
+      penalty.title,
+      `${escapeHtml(penalty.text)}<br><br>Hiệu lực: <strong>${CONFIG.RUSTY_TURNS} lượt</strong>.`,
+      "🎲","danger"
+    );
+    return;
+  }
+
+  if(penalty.type==="curse"){
+    player.curseTurns=CONFIG.CURSE_TURNS;
+    addLog(`🧡 ${player.name} dính LỜI NGUYỀN NHÂN PHẨM — ${CONFIG.CURSE_TURNS} lượt.`);
+    renderAll();
+
+    await showInfoModalPromise(
+      penalty.title,
+      `${escapeHtml(penalty.text)}<br><br>Hiệu lực: <strong>${CONFIG.CURSE_TURNS} lượt</strong>.`,
+      "🧡","danger"
+    );
+  }
+}
+
+async function resolveEvent(player){
+  const event=randomItem(CONTENT.EVENTS);
+  if(!event)return;
+
+  SFX.event();
+
+  let effect="";
+
+  if(event.effect==="money"){
+    const gained=applyRewardMoney(player,event.amount);
+    effect=`Nhận <strong class="money">+$${gained}</strong>.`;
+    addLog(`📡 ${player.name}: ${event.title} +$${gained}.`);
+    launchConfetti();
+  }
+
+  if(event.effect==="loss"){
+    const lost=applyPenaltyMoney(player,event.amount);
+    effect=`Bị trừ <strong class="money-negative">-$${lost}</strong>.`;
+    addLog(`📡 ${player.name}: ${event.title} -$${lost}.`);
+  }
+
+  if(event.effect==="moveBack"){
+    const actualAmount=Math.min(event.amount,player.position);
+    player.position=Math.max(0,player.position-event.amount);
+    triggerCurseForMoveBack(player,actualAmount);
+
+    effect=`Lùi <strong>${actualAmount}</strong> chốt. Vị trí mới: <strong>Chốt ${player.position+1}</strong>.`;
+    addLog(`🔙 ${player.name} lùi ${actualAmount} chốt do mệnh lệnh.`);
+    pulseDestination(player.position);
+  }
+
+  if(event.effect==="swapMoney"){
+    const target=randomItem(players.filter(candidate=>candidate.id!==player.id));
+
+    if(target){
+      const oldPlayerMoney=player.money;
+      player.money=target.money;
+      target.money=oldPlayerMoney;
+      effect=`Đổi toàn bộ quân trang với <strong>${escapeHtml(target.name)}</strong>.`;
+      addLog(`⚫⚪ ${player.name} đổi tiền với ${target.name}.`);
+    }
+  }
+
+  if(event.effect==="extraTurn"){
+    pendingExtraTurn=true;
+    effect="Đơn vị được quyền hành quân thêm một lượt.";
+    addLog(`⚡ ${player.name} nhận thêm lượt từ Mệnh lệnh.`);
+  }
+
+  renderAll();
+
+  await showInfoModalPromise(
+    event.title,
+    `${escapeHtml(event.text)}<br><br>${effect}`,
+    "📡",
+    event.effect==="loss"?"danger":"secondary"
+  );
+}
+
+async function resolveJailTile(player){
+  const reason=randomItem(CONTENT.JAIL_REASONS);
+
+  player.inJail=true;
+  player.jailReason=reason;
+
+  addLog(`⛓️ ${player.name} bị giữ chân vì ${reason.title}.`);
+  renderAll();
+
+  await showInfoModalPromise(
+    "⛓️ BỊ GIỮ CHÂN",
+    `
+      <strong>${escapeHtml(player.name)}</strong> đã bị giữ chân.
+
+      <div class="special-card">
+        <div class="special-title">${escapeHtml(reason.title)}</div>
+        <div class="special-text">${escapeHtml(reason.text)}</div>
+      </div>
+
+      🎲 Đổ <strong>1 hoặc 6</strong>: tự động thoát.
+      <br><br>
+      💰 Đổ số khác: có thể trả
+      <strong>$${CONFIG.JAIL_RELEASE_COST}</strong>
+      để thoát ngay.
+    `,
+    "⛓️","danger"
+  );
+}
+
+async function handleJailTurn(player){
+  addLog(`⛓️ ${player.name} đang bị giữ chân và phải tung xúc xắc để tìm đường thoát.`);
+
+  const finalValue=randomInt(1,6);
+
+  SFX.dice();
+  await animateDice(finalValue);
+  hideDiceOverlay();
+  renderDice(finalValue);
+
+  if(finalValue===1||finalValue===6){
+    player.inJail=false;
+    player.jailReason=null;
+
+    SFX.jailRelease();
+
+    addLog(`🔓 ${player.name} đổ ${finalValue} và THOÁT GIỮ CHÂN!`);
+    showToast(`🔓 ${player.name} đã thoát!`);
+
+    renderAll();
+
+    await showInfoModalPromise(
+      "🔓 THOÁT GIỮ CHÂN",
+      `${escapeHtml(player.name)} đổ được <strong>${finalValue}</strong>.<br><br>Đơn vị được trở lại hành quân.`,
+      "🔓","primary"
+    );
+
+    return;
+  }
+
+  addLog(`⛓️ ${player.name} đổ ${finalValue} và vẫn bị giữ chân.`);
+  renderAll();
+
+  const canPay=player.money>=CONFIG.JAIL_RELEASE_COST;
+
+  await new Promise(resolve=>{
+    showModal();
+
+    modalElement.innerHTML=`
+      <div class="modal-icon">⛓️</div>
+      <div class="modal-title">VẪN CÒN BỊ GIỮ CHÂN</div>
+
+      <div class="modal-description">
+        ${escapeHtml(player.name)} vừa đổ được <strong>${finalValue}</strong>.
+      </div>
+
+      <div class="special-card">
+        <div class="special-title">📋 LỰA CHỌN</div>
+        <div class="special-text">
+          Quân trang hiện tại:
+          <strong>${formatMoney(player.money)}</strong>
+          <br><br>
+          Phí giải phóng:
+          <strong>$${CONFIG.JAIL_RELEASE_COST}</strong>
+        </div>
+      </div>
+
+      <div class="modal-actions">
+        <button class="modal-button gold" id="payJail" type="button" ${canPay?"":"disabled"}>
+          💰 TRẢ $${CONFIG.JAIL_RELEASE_COST}
+        </button>
+        <button class="modal-button danger" id="stayJail" type="button">
+          ⛓️ TIẾP TỤC GIỮ CHÂN
+        </button>
+      </div>
+    `;
+
+    $("payJail").addEventListener("click",()=>{
+      if(player.money<CONFIG.JAIL_RELEASE_COST)return;
+
+      player.money-=CONFIG.JAIL_RELEASE_COST;
+      player.inJail=false;
+      player.jailReason=null;
+
+      SFX.money();
+      addLog(`💵 ${player.name} trả $${CONFIG.JAIL_RELEASE_COST} để được giải phóng.`);
+
+      closeModal();
+      showToast(`🔓 ${player.name} đã được giải phóng!`);
+      resolve();
+    });
+
+    $("stayJail").addEventListener("click",()=>{
+      addLog(`⛓️ ${player.name} tiếp tục bị giữ chân.`);
+      closeModal();
+      resolve();
+    });
+  });
+}
+
+async function resolveJackpot(player){
+  if(Math.random()>CONFIG.MEGA_JACKPOT_CHANCE){
+    await showInfoModalPromise(
+      "🎰 ĐẠI THẮNG",
+      "Chốt Đại Thắng không kích hoạt hiệu ứng hiếm lần này.",
+      "🎰"
+    );
+    return;
+  }
+
+  player.jackpotActive=true;
+  player.collapseActive=false;
+
+  SFX.jackpot();
+  launchConfetti();
+
+  addLog(`🎰 HIẾM! ${player.name} kích hoạt ĐẠI THẮNG.`);
+
+  await showInfoModalPromise(
+    "🎰 ĐẠI THẮNG KÍCH HOẠT",
+    `Thưởng tăng <strong>36%</strong> và mức phạt giảm <strong>20%</strong>.<br><br>Hiệu ứng được giữ cho đến khi hiệu ứng hiếm khác thay thế.`,
+    "🎰","gold"
+  );
+}
+
+async function resolveCollapse(player){
+  if(Math.random()>CONFIG.MENTAL_COLLAPSE_CHANCE){
+    await showInfoModalPromise(
+      "🧠 ÁP LỰC",
+      "Chốt Áp Lực không kích hoạt hiệu ứng hiếm lần này.",
+      "🧠"
+    );
+    return;
+  }
+
+  player.collapseActive=true;
+  player.jackpotActive=false;
+
+  SFX.collapse();
+  addLog(`🧠 HIẾM! ${player.name} kích hoạt ÁP LỰC.`);
+
+  await showInfoModalPromise(
+    "🧠 ÁP LỰC KÍCH HOẠT",
+    `Thưởng giảm <strong>36%</strong> và mức phạt tăng <strong>20%</strong>.<br><br>Hiệu ứng được giữ cho đến khi hiệu ứng hiếm khác thay thế.`,
+    "🧠","danger"
+  );
+}
+
+async function resolveTile(player){
+  const type=BOARD_LAYOUT[player.position];
+
+  addLog(`📍 ${player.name} đang ở chốt ${player.position+1}: ${TILE_META[type].label}.`);
+
+  if(type==="start"){
+    const gained=applyRewardMoney(player,CONFIG.START_BONUS);
+    SFX.startBonus();
+
+    await showInfoModalPromise(
+      "🚩 DOANH TRẠI",
+      `Bạn vừa hoàn thành một vòng hành quân.<br><br>Thưởng vòng: <strong class="money">+$${gained}</strong>`,
+      "🚩","gold"
+    );
+    return;
+  }
+
+  if(type==="question"){
+    if(player.auraTurns>0){
+      const responder=getNextPlayer(player);
+      player.auraTurns=0;
+
+      addLog(`💗 NHƯỜNG AURA: ${player.name} nhường câu hỏi cho ${responder.name}.`);
+      renderAll();
+
+      await showQuestion(player,responder);
+    }else{
+      await showQuestion(player);
+    }
+    return;
+  }
+
+  if(type==="reward"){
+    await resolveReward(player);
+    return;
+  }
+
+  if(type==="event"){
+    await resolveEvent(player);
+    return;
+  }
+
+  if(type==="penalty"){
+    await resolvePenalty(player);
+    return;
+  }
+
+  if(type==="jail"){
+    await resolveJailTile(player);
+    return;
+  }
+
+  if(type==="jackpot"){
+    await resolveJackpot(player);
+    return;
+  }
+
+  if(type==="collapse"){
+    await resolveCollapse(player);
+  }
+
+  clearTileEffects();
+  renderAll();
+}
+
+function checkWinner(player){
+  if(player.money<CONFIG.WIN_MONEY)return false;
+
+  gameEnded=true;
+  isRolling=false;
+  moveAnimationRunning=false;
+  rollButton.disabled=true;
+
+  addLog(`🏆 ${player.name} đã đạt ${formatMoney(player.money)} và hoàn thành chiến dịch!`);
+
+  SFX.win();
+  launchConfetti();
+  showModal();
+
+  modalElement.innerHTML=`
+    <div class="modal-icon">🏆</div>
+    <div class="modal-title">${escapeHtml(player.name)} HOÀN THÀNH CHIẾN DỊCH!</div>
+
+    <div class="modal-description">
+      Đơn vị đã đạt đủ mốc quân trang.
+    </div>
+
+    <div class="winner-banner">
+      💰 ${formatMoney(player.money)}
+      <br>
+      🎖️ ĐẠT MỐC ${formatMoney(CONFIG.WIN_MONEY)}
+    </div>
+
+    <div class="special-card">
+      <div class="special-title">📡 BÁO CÁO CHIẾN DỊCH</div>
+      <div class="special-text">
+        Vị trí cuối: <strong>Chốt ${player.position+1}</strong>
+        <br><br>
+        Vòng: <strong>${currentRound}</strong>
+      </div>
+    </div>
+
+    <div class="modal-actions">
+      <button class="modal-button gold" id="winnerReset" type="button">
+        ↻ CHƠI LẠI CHIẾN DỊCH
+      </button>
+    </div>
+  `;
+
+  $("winnerReset").addEventListener("click",()=>{
+    SFX.click();
+    closeModal();
+    initGame();
+  });
+
+  return true;
+}
+
+function consumeTurnEffects(player){
+  if(player.auraTurns>0){
+    player.auraTurns--;
+    if(player.auraTurns===0)addLog(`💗 Nhường Aura của ${player.name} đã hết hiệu lực.`);
+  }
+
+  if(player.rustTurns>0){
+    player.rustTurns--;
+    if(player.rustTurns===0){
+      addLog(`🎲 Xúc xắc rỉ sét của ${player.name} đã hết hiệu lực.`);
+      showToast("🎲 Xúc xắc đã trở lại bình thường!");
+    }
+  }
+
+  if(player.curseTurns>0){
+    player.curseTurns--;
+    if(player.curseTurns===0){
+      addLog(`🧡 Lời nguyền nhân phẩm của ${player.name} đã hết hiệu lực.`);
+      showToast("🧡 Lời nguyền đã biến mất!");
+    }
+  }
+
+  renderAll(player.id);
+}
+
+async function rollDice(){
+  if(
+    isRolling||
+    moveAnimationRunning||
+    modalOpen||
+    gameEnded||
+    !startPlayerChosen
+  )return;
+
+  const player=players[currentPlayerIndex];
+
+  isRolling=true;
+  renderAll(player.id);
+
+  if(player.inJail){
+    SFX.dice();
+    showDiceOverlay();
+
+    diceOverlayCaption.textContent=`⛓️ ${player.name.toUpperCase()} ĐANG TÌM ĐƯỜNG THOÁT`;
+    bigDice.classList.add("rolling");
+
+    await handleJailTurn(player);
+
+    hideDiceOverlay();
+    isRolling=false;
+
+    if(!gameEnded)finishTurn();
+    return;
+  }
+
+  if(player.skipNext){
+    player.skipNext=false;
+
+    addLog(`⏭️ ${player.name} bị bỏ qua lượt này.`);
+    showToast(`⏭️ ${player.name} bị bỏ qua lượt.`);
+
+    SFX.skip();
+    renderAll();
+
+    await showInfoModalPromise(
+      "⏭️ BỎ LƯỢT",
+      `${escapeHtml(player.name)} bị mất lượt do hình phạt.`,
+      "⏭️","danger"
+    );
+
+    consumeTurnEffects(player);
+    finishTurn();
+    return;
+  }
+
+  addLog(`🎲 ${player.name} nhận lệnh tung xúc xắc...`);
+
+  SFX.dice();
+  showDiceOverlay();
+
+  diceOverlayCaption.textContent=`🎲 ${player.name.toUpperCase()} ĐANG TUNG XÚC XẮC`;
+  bigDiceSubtitle.textContent="Đang xác định kết quả...";
+  bigDice.classList.add("rolling");
+
+  const startedAt=performance.now();
+
+  while(performance.now()-startedAt<CONFIG.DICE_DURATION){
+    const temporary=randomInt(1,6);
+    renderDiceValue(temporary);
+    bigDiceNumber.textContent=String(temporary);
+    SFX.tick();
+    await wait(CONFIG.DICE_TICK);
+  }
+
+  const finalValue=randomInt(1,6);
+
+  bigDice.classList.remove("rolling");
+  renderDice(finalValue);
+
+  bigDiceNumber.textContent=String(finalValue);
+  bigDiceSubtitle.textContent=`KẾT QUẢ: ${finalValue}`;
+  SFX.diceFinal(finalValue);
+
+  lastDiceValue=finalValue;
+
+  const actualSteps=player.rustTurns>0?Math.min(1,finalValue):finalValue;
+  const destination=(player.position+actualSteps)%CONFIG.BOARD_SIZE;
+
+  lastDestination=destination;
+
+  await wait(CONFIG.DICE_FINAL_HOLD);
+
+  hideDiceOverlay();
+
+  showRollPreview(player,actualSteps);
+  pulseDestination(destination);
+
+  if(player.rustTurns>0){
+    addLog(`🎲 ${player.name} bị XÚC XẮC RỈ SÉT: đổ ${finalValue} nhưng chỉ được tiến 1 chốt.`);
+  }else{
+    addLog(`🎯 ${player.name} sẽ đến chốt ${destination+1}.`);
+  }
+
+  renderAll(player.id);
+
+  await wait(CONFIG.DESTINATION_HOLD);
+
+  hideRollPreview();
+
+  await movePlayer(player,actualSteps);
+
+  renderAll(player.id);
+
+  await resolveTile(player);
+
+  if(gameEnded){
+    isRolling=false;
+    return;
+  }
+
+  if(checkWinner(player)){
+    isRolling=false;
+    return;
+  }
+
+  consumeTurnEffects(player);
+
+  if(checkWinner(player)){
+    isRolling=false;
+    return;
+  }
+
+  finishTurn();
+}
+
+function finishTurn(){
+  isRolling=false;
+
+  if(gameEnded){
+    renderAll();
+    return;
+  }
+
+  if(pendingExtraTurn){
+    pendingExtraTurn=false;
+
+    addLog(`⚡ ${players[currentPlayerIndex].name} được hành quân thêm một lượt.`);
+    showToast(`⚡ ${players[currentPlayerIndex].name} được thêm lượt!`);
+    SFX.extraTurn();
+
+    renderAll(players[currentPlayerIndex].id);
+    return;
+  }
+
+  currentPlayerIndex=(currentPlayerIndex+1)%players.length;
+  turnNumber++;
+
+  if(currentPlayerIndex===0)currentRound++;
+
+  renderAll(players[currentPlayerIndex].id);
+  addLog(`➡️ Đến lượt ${players[currentPlayerIndex].name}.`);
+}
+
+function resetGameState(){
+  currentPlayerIndex=0;
+  isRolling=false;
+  modalOpen=false;
+  currentQuestion=null;
+  currentQuestionAnswers=[];
+  currentRound=1;
+  gameEnded=false;
+  moveAnimationRunning=false;
+  pendingExtraTurn=false;
+  startPlayerChosen=false;
+  turnNumber=0;
+  lastDiceValue=0;
+  lastDestination=-1;
+  startRandomizerRunning=false;
+}
+
+function initGame(){
+  resetGameState();
+  createPlayers();
+  buildBoard();
+  setupDiceFaces();
+
+  eventLogElement.innerHTML="";
+  renderDice(0);
+  hideRollPreview();
+  hideDiceOverlay();
+  clearTileEffects();
+
+  addLog("🎖️ MINI GAME GDQP — V19 LOGIC × V20 UI đã sẵn sàng.");
+  addLog("📡 Giao diện Tactical Command đã kết nối với game state.");
+  addLog("💗 Nhường Aura, Xúc xắc Rỉ sét và Lời nguyền Nhân phẩm đã sẵn sàng.");
+  addLog("🎲 Cơ chế xúc xắc, hành quân, chốt đặc biệt và thắng $100 được duy trì.");
+
+  renderAll();
+
+  setTimeout(showRulesPopup,350);
+}
+
+const SFX=(()=>{
+  let audioContext=null;
+  let masterGain=null;
+  let compressor=null;
+
+  function ensure(){
+    if(audioContext){
+      if(audioContext.state==="suspended")audioContext.resume();
+      return;
+    }
+
+    const AudioContextClass=window.AudioContext||window.webkitAudioContext;
+    if(!AudioContextClass)return;
+
+    audioContext=new AudioContextClass();
+
+    masterGain=audioContext.createGain();
+    masterGain.gain.value=.42;
+
+    compressor=audioContext.createDynamicsCompressor();
+    compressor.threshold.value=-18;
+    compressor.knee.value=18;
+    compressor.ratio.value=8;
+    compressor.attack.value=.003;
+    compressor.release.value=.16;
+
+    masterGain.connect(compressor);
+    compressor.connect(audioContext.destination);
+  }
+
+  function tone(frequency,duration,type="sine",volume=.18,delay=0){
+    ensure();
+    if(!audioContext||!masterGain)return;
+
+    const now=audioContext.currentTime+delay;
+    const oscillator=audioContext.createOscillator();
+    const gain=audioContext.createGain();
+
+    oscillator.type=type;
+    oscillator.frequency.setValueAtTime(frequency,now);
+
+    gain.gain.setValueAtTime(.0001,now);
+    gain.gain.exponentialRampToValueAtTime(Math.max(.0002,volume),now+.008);
+    gain.gain.exponentialRampToValueAtTime(.0001,now+duration);
+
+    oscillator.connect(gain);
+    gain.connect(masterGain);
+
+    oscillator.start(now);
+    oscillator.stop(now+duration+.03);
+  }
+
+  function noise(duration=.08,volume=.12,delay=0){
+    ensure();
+    if(!audioContext||!masterGain)return;
+
+    const length=Math.max(1,Math.floor(audioContext.sampleRate*duration));
+    const buffer=audioContext.createBuffer(1,length,audioContext.sampleRate);
+    const data=buffer.getChannelData(0);
+
+    for(let i=0;i<length;i++)data[i]=(Math.random()*2-1)*(1-i/length);
+
+    const source=audioContext.createBufferSource();
+    const gain=audioContext.createGain();
+    const now=audioContext.currentTime+delay;
+
+    source.buffer=buffer;
+    gain.gain.setValueAtTime(volume,now);
+    gain.gain.exponentialRampToValueAtTime(.0001,now+duration);
+
+    source.connect(gain);
+    gain.connect(masterGain);
+
+    source.start(now);
+  }
+
+  return{
+    click(){
+      tone(720,.055,"square",.09);
+    },
+
+    tick(){
+      tone(randomInt(180,270),.035,"square",.035);
+    },
+
+    dice(){
+      noise(.18,.09);
+      tone(90,.12,"sawtooth",.05);
+    },
+
+    diceFinal(value){
+      tone(220+value*45,.08,"triangle",.15);
+      tone(330+value*55,.12,"triangle",.13,.08);
+    },
+
+    move(){
+      tone(180,.045,"triangle",.035);
+    },
+
+    moveBack(){
+      tone(130,.07,"sawtooth",.045);
+    },
+
+    correct(){
+      tone(523.25,.1,"triangle",.14);
+      tone(659.25,.12,"triangle",.14,.09);
+      tone(783.99,.2,"triangle",.16,.18);
+    },
+
+    wrong(){
+      tone(180,.14,"sawtooth",.12);
+      tone(120,.2,"sawtooth",.1,.13);
+    },
+
+    reward(){
+      tone(523.25,.1,"triangle",.13);
+      tone(659.25,.1,"triangle",.13,.09);
+      tone(783.99,.18,"triangle",.15,.18);
+    },
+
+    penalty(){
+      tone(170,.11,"sawtooth",.1);
+      tone(110,.18,"sawtooth",.08,.11);
+    },
+
+    event(){
+      tone(392,.08,"triangle",.1);
+      tone(523.25,.08,"triangle",.11,.08);
+      tone(659.25,.14,"triangle",.12,.16);
+    },
+
+    money(){
+      tone(660,.07,"triangle",.12);
+      tone(880,.12,"triangle",.12,.08);
+    },
+
+    startBonus(){
+      tone(261.63,.1,"triangle",.13);
+      tone(329.63,.1,"triangle",.12,.09);
+      tone(392,.16,"triangle",.14,.18);
+    },
+
+    jail(){
+      tone(180,.15,"sawtooth",.1);
+      tone(130,.2,"sawtooth",.08,.15);
+    },
+
+    jailRelease(){
+      tone(392,.1,"triangle",.13);
+      tone(523.25,.1,"triangle",.14,.1);
+      tone(783.99,.2,"triangle",.16,.2);
+    },
+
+    jackpot(){
+      tone(523.25,.1,"triangle",.15);
+      tone(659.25,.1,"triangle",.15,.08);
+      tone(783.99,.1,"triangle",.16,.16);
+      tone(1046.5,.3,"triangle",.18,.25);
+    },
+
+    collapse(){
+      tone(180,.2,"sawtooth",.09);
+      tone(145,.25,"triangle",.08,.15);
+      tone(110,.3,"triangle",.07,.3);
+    },
+
+    skip(){
+      tone(150,.1,"square",.07);
+      tone(110,.15,"square",.06,.09);
+    },
+
+    extraTurn(){
+      tone(392,.1,"triangle",.13);
+      tone(523.25,.1,"triangle",.14,.09);
+      tone(783.99,.22,"triangle",.17,.18);
+    },
+
+    win(){
+      [392,523.25,659.25,783.99,1046.5,1318.5].forEach((frequency,index)=>{
+        tone(frequency,.22,"triangle",.16,index*.11);
+      });
+      noise(.3,.08,.15);
+    },
+
+    start(){
+      tone(261.63,.12,"triangle",.12);
+      tone(329.63,.12,"triangle",.12,.1);
+      tone(392,.12,"triangle",.13,.2);
+      tone(523.25,.3,"triangle",.16,.3);
+    }
+  };
+})();
+
+rollButton.addEventListener("click",()=>{
+  SFX.click();
+  rollDice();
+});
+
+rulesButton.addEventListener("click",()=>{
+  if(isRolling||moveAnimationRunning){
+    showToast("⏳ Hãy chờ animation hiện tại kết thúc.");
+    return;
+  }
+
+  SFX.click();
+  showRulesPopup();
+});
+
+resetButton.addEventListener("click",()=>{
+  if(isRolling||moveAnimationRunning){
+    showToast("⏳ Hãy chờ animation hiện tại kết thúc.");
+    return;
+  }
+
+  SFX.click();
+  initGame();
+});
+
+modalBackdrop.addEventListener("click",event=>{
+  if(
+    event.target===modalBackdrop&&
+    !currentQuestion&&
+    startPlayerChosen&&
+    !gameEnded&&
+    !startRandomizerRunning
+  ){
+    closeModal();
+  }
+});
+
+document.addEventListener("keydown",event=>{
+  if(
+    event.key==="Escape"&&
+    modalOpen&&
+    !currentQuestion&&
+    startPlayerChosen&&
+    !gameEnded&&
+    !startRandomizerRunning
+  ){
+    closeModal();
+  }
+});
+
+window.addEventListener("resize",()=>{
+  renderPieces();
+
+  if(lastDiceValue){
+    renderDice(lastDiceValue);
+  }
+});
+
+document.addEventListener("pointerdown",()=>{
+  try{
+    SFX.click();
+  }catch(error){}
+},{once:true});
+
+initGame();
+</script>
+</body>
+</html>
